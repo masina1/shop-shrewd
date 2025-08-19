@@ -2,41 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Supermarket Price Comparison App Design System */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors */
+    --background: 0 0% 98%;
+    --foreground: 215 25% 15%;
 
+    /* Card system */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 25% 15%;
 
+    /* Interactive elements */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 215 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Brand colors - Fresh supermarket theme */
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 142 76% 45%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Price/savings green */
+    --success: 120 60% 35%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 120 40% 92%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Deal/promo colors */
+    --accent: 25 85% 55%;
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 25 85% 95%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Neutral system */
+    --secondary: 210 15% 95%;
+    --secondary-foreground: 215 25% 15%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --muted: 210 15% 96%;
+    --muted-foreground: 215 12% 50%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Store badge colors */
+    --store-a: 220 85% 60%;
+    --store-b: 280 85% 60%;
+    --store-c: 25 85% 60%;
 
-    --radius: 0.5rem;
+    /* System colors */
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214.3 20% 88%;
+    --input: 214.3 20% 94%;
+    --ring: 142 76% 36%;
+
+    /* Design tokens */
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-lg: 1rem;
+
+    /* Shadows */
+    --shadow-soft: 0 2px 8px -2px hsl(215 25% 15% / 0.08);
+    --shadow-medium: 0 4px 16px -4px hsl(215 25% 15% / 0.12);
+    --shadow-large: 0 8px 32px -8px hsl(215 25% 15% / 0.16);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(120 60% 45%));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(25 85% 65%));
 
     --sidebar-background: 0 0% 98%;
 
@@ -53,9 +83,65 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar (prepare for future use) */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 215 25% 15%;
+    --sidebar-primary: 142 76% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 15% 95%;
+    --sidebar-accent-foreground: 215 25% 15%;
+    --sidebar-border: 214.3 20% 88%;
+    --sidebar-ring: 142 76% 36%;
   }
 
   .dark {
+    /* Dark mode - prepared for future implementation */
+    --background: 215 30% 8%;
+    --foreground: 210 15% 90%;
+
+    --card: 215 25% 10%;
+    --card-foreground: 210 15% 90%;
+
+    --popover: 215 25% 10%;
+    --popover-foreground: 210 15% 90%;
+
+    --primary: 142 76% 45%;
+    --primary-foreground: 215 30% 8%;
+    --primary-light: 142 76% 55%;
+
+    --success: 120 60% 45%;
+    --success-foreground: 215 30% 8%;
+    --success-light: 120 40% 15%;
+
+    --accent: 25 85% 65%;
+    --accent-foreground: 215 30% 8%;
+    --accent-light: 25 85% 15%;
+
+    --secondary: 215 25% 15%;
+    --secondary-foreground: 210 15% 90%;
+
+    --muted: 215 25% 12%;
+    --muted-foreground: 215 12% 65%;
+
+    --store-a: 220 85% 70%;
+    --store-b: 280 85% 70%;
+    --store-c: 25 85% 70%;
+
+    --destructive: 0 75% 65%;
+    --destructive-foreground: 215 30% 8%;
+
+    --border: 215 25% 20%;
+    --input: 215 25% 15%;
+    --ring: 142 76% 45%;
+
+    --sidebar-background: 215 30% 6%;
+    --sidebar-foreground: 210 15% 85%;
+    --sidebar-primary: 142 76% 45%;
+    --sidebar-primary-foreground: 215 30% 8%;
+    --sidebar-accent: 215 25% 12%;
+    --sidebar-accent-foreground: 210 15% 85%;
+    --sidebar-border: 215 25% 18%;
+    --sidebar-ring: 142 76% 45%;
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -100,6 +186,49 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer components {
+  /* Custom utility classes */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+  
+  .shadow-large {
+    box-shadow: var(--shadow-large);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-success {
+    background: var(--gradient-success);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  /* Store badge styles */
+  .store-badge-a {
+    background-color: hsl(var(--store-a));
+    color: white;
+  }
+  
+  .store-badge-b {
+    background-color: hsl(var(--store-b));
+    color: white;
+  }
+  
+  .store-badge-c {
+    background-color: hsl(var(--store-c));
+    color: white;
   }
 }
