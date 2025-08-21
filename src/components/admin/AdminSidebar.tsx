@@ -60,8 +60,11 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 transform bg-sidebar border-r border-sidebar-border transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          "w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-200 ease-in-out",
+          // Mobile: fixed overlay
+          "fixed inset-y-0 left-0 z-50 lg:relative lg:z-auto",
+          // Show/hide on mobile
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
         role="navigation"
         aria-label="Admin navigation"
