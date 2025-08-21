@@ -13,6 +13,9 @@ import WishlistsPage from "./pages/WishlistsPage";
 import WishlistDetail from "./pages/WishlistDetail";
 import AboutPage from "./pages/AboutPage";
 import AppPromoPage from "./pages/AppPromoPage";
+import Dashboard from "./pages/Dashboard";
+import AuthLogin from "./pages/auth/AuthLogin";
+import AuthRegister from "./pages/auth/AuthRegister";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,21 +26,31 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/search" element={<SearchResults />} />
-            <Route path="/product/:id" element={<ProductPage />} />
-            <Route path="/combos" element={<CombosPage />} />
-            <Route path="/combos/:id" element={<ComboDetail />} />
-            <Route path="/lists" element={<WishlistsPage />} />
-            <Route path="/lists/:id" element={<WishlistDetail />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/app" element={<AppPromoPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          {/* Auth routes without layout */}
+          <Route path="/auth/login" element={<AuthLogin />} />
+          <Route path="/auth/register" element={<AuthRegister />} />
+          
+          {/* Main app routes with layout */}
+          <Route path="/*" element={
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/product/:id" element={<ProductPage />} />
+                <Route path="/combos" element={<CombosPage />} />
+                <Route path="/combos/:id" element={<ComboDetail />} />
+                <Route path="/lists" element={<WishlistsPage />} />
+                <Route path="/lists/:id" element={<WishlistDetail />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/app" element={<AppPromoPage />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          } />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

@@ -1,11 +1,23 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search, User, Menu, Home, Package, Heart, Info, Smartphone } from "lucide-react";
+import { Search, User, Menu, Home, Package, Heart, Info, Smartphone, Settings, LogOut, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { SearchBar } from "./SearchBar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Mock authentication state - in real app this would come from auth context
+  const [isAuthenticated] = useState(false);
+  const [userName] = useState("Ana");
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -59,11 +71,70 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             <Menu className="h-5 w-5" />
           </button>
 
-          {/* User/Profile */}
+          {/* User Menu */}
           <div className="hidden md:flex items-center ml-4">
-            <button className="p-2 hover:bg-muted rounded-lg transition-colors">
-              <User className="h-5 w-5" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {isAuthenticated ? (
+                  <>
+                    <div className="px-2 py-1.5">
+                      <p className="text-sm font-medium">{userName}</p>
+                      <p className="text-xs text-muted-foreground">Signed in</p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="flex items-center">
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/lists" className="flex items-center">
+                        <Heart className="mr-2 h-4 w-4" />
+                        My Lists
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/settings" className="flex items-center">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-destructive">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/auth/login" className="flex items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        Sign In
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/auth/register" className="flex items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        Sign Up
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <div className="px-2 py-1.5">
+                      <p className="text-xs text-muted-foreground">
+                        Sign in to sync your lists and get alerts
+                      </p>
+                    </div>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -120,10 +191,69 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
               </Link>
             );
           })}
-          <button className="flex-1 flex flex-col items-center py-2 px-1 text-xs text-muted-foreground">
-            <User className="h-5 w-5 mb-1" />
-            <span className="text-[10px]">Profile</span>
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex-1 flex flex-col items-center py-2 px-1 text-xs text-muted-foreground">
+                <User className="h-5 w-5 mb-1" />
+                <span className="text-[10px]">Profile</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 mb-2">
+              {isAuthenticated ? (
+                <>
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium">{userName}</p>
+                    <p className="text-xs text-muted-foreground">Signed in</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="flex items-center">
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/lists" className="flex items-center">
+                      <Heart className="mr-2 h-4 w-4" />
+                      My Lists
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link to="/auth/login" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Sign In
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/auth/register" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Sign Up
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <div className="px-2 py-1.5">
+                    <p className="text-xs text-muted-foreground">
+                      Sign in to sync your lists and get alerts
+                    </p>
+                  </div>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
       </div>
 
