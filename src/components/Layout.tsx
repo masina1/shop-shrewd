@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search, User, Menu, Home, Package, Heart, Info, Smartphone, Settings, LogOut, BarChart3 } from "lucide-react";
+import { Search, User, Menu, Home, Package, Heart, Info, Smartphone, Settings, LogOut, BarChart3, Upload, Award, Trophy } from "lucide-react";
 import { useState } from "react";
 import { SearchBar } from "./SearchBar";
 import {
@@ -105,6 +105,24 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                       <Link to="/lists" className="flex items-center">
                         <Heart className="mr-2 h-4 w-4" />
                         {t('main.my_lists')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/submit-offer" className="flex items-center">
+                        <Upload className="mr-2 h-4 w-4" />
+                        Submit Offer
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/rewards" className="flex items-center">
+                        <Award className="mr-2 h-4 w-4" />
+                        My Rewards
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/leaderboard" className="flex items-center">
+                        <Trophy className="mr-2 h-4 w-4" />
+                        Leaderboard
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
@@ -220,19 +238,37 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                       {t('main.dashboard')}
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/lists" className="flex items-center">
-                      <Heart className="mr-2 h-4 w-4" />
-                      {t('main.my_lists')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/settings" className="flex items-center">
-                      <Settings className="mr-2 h-4 w-4" />
-                      {t('main.settings')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                   <DropdownMenuItem asChild>
+                     <Link to="/lists" className="flex items-center">
+                       <Heart className="mr-2 h-4 w-4" />
+                       {t('main.my_lists')}
+                     </Link>
+                   </DropdownMenuItem>
+                   <DropdownMenuItem asChild>
+                     <Link to="/submit-offer" className="flex items-center">
+                       <Upload className="mr-2 h-4 w-4" />
+                       Submit Offer
+                     </Link>
+                   </DropdownMenuItem>
+                   <DropdownMenuItem asChild>
+                     <Link to="/rewards" className="flex items-center">
+                       <Award className="mr-2 h-4 w-4" />
+                       My Rewards
+                     </Link>
+                   </DropdownMenuItem>
+                   <DropdownMenuItem asChild>
+                     <Link to="/leaderboard" className="flex items-center">
+                       <Trophy className="mr-2 h-4 w-4" />
+                       Leaderboard
+                     </Link>
+                   </DropdownMenuItem>
+                   <DropdownMenuItem asChild>
+                     <Link to="/settings" className="flex items-center">
+                       <Settings className="mr-2 h-4 w-4" />
+                       {t('main.settings')}
+                     </Link>
+                   </DropdownMenuItem>
+                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     {t('main.logout')}

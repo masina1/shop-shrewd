@@ -23,6 +23,7 @@ const sidebarItems = [
   { titleKey: "sidebar.products", url: "/admin/products", icon: Package },
   { titleKey: "sidebar.stores", url: "/admin/stores", icon: Store },
   { titleKey: "sidebar.offers", url: "/admin/offers", icon: Tag },
+  { titleKey: "sidebar.review", url: "/admin/review", icon: Shield },
   { titleKey: "combos", url: "/admin/combos", icon: Layers },
   { titleKey: "templates", url: "/admin/templates", icon: FileText },
   { titleKey: "ingestion", url: "/admin/ingestion", icon: Download },

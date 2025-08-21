@@ -11,7 +11,10 @@ import {
   Settings,
   Plus,
   ArrowRight,
-  Store
+  Store,
+  Award,
+  Trophy,
+  Upload
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -377,6 +380,44 @@ export default function Dashboard() {
                     <Label className="text-sm font-medium">Currency</Label>
                     <p className="text-sm text-muted-foreground">RON (Romanian Leu)</p>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Rewards & Offers Section */}
+            <Card className="shadow-medium md:col-span-2 lg:col-span-3">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="h-5 w-5" />
+                  Rewards & Community
+                </CardTitle>
+                <CardDescription>Contribute to the community and earn rewards</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <Button asChild className="gradient-primary h-auto p-4 flex-col gap-2">
+                    <Link to="/submit-offer">
+                      <Upload className="h-6 w-6" />
+                      <span className="font-medium">Submit Offer</span>
+                      <span className="text-xs opacity-90">Share better prices you found</span>
+                    </Link>
+                  </Button>
+                  
+                  <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2">
+                    <Link to="/rewards">
+                      <Award className="h-6 w-6" />
+                      <span className="font-medium">My Rewards</span>
+                      <span className="text-xs text-muted-foreground">View points & badges</span>
+                    </Link>
+                  </Button>
+                  
+                  <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2">
+                    <Link to="/leaderboard">
+                      <Trophy className="h-6 w-6" />
+                      <span className="font-medium">Leaderboard</span>
+                      <span className="text-xs text-muted-foreground">Top contributors</span>
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
