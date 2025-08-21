@@ -1,0 +1,98 @@
+{
+  "version": "2025-08-21T10:30:00.000Z",
+  "updatedAt": "2025-08-21T10:30:00.000Z",
+  "slots": [
+    {
+      "id": "home-hero-banner",
+      "routePattern": "/",
+      "section": "Hero Banner",
+      "status": "on",
+      "provider": "gpt",
+      "countries": ["RO", "MD"],
+      "sizes": [
+        { "width": 728, "height": 90 },
+        { "width": 970, "height": 250 }
+      ],
+      "updatedAt": "2025-08-21T09:15:00.000Z",
+      "createdAt": "2025-08-20T14:00:00.000Z",
+      "unitPath": "/supermarket-ro/home-hero",
+      "targeting": {
+        "category": "food",
+        "location": "bucharest"
+      },
+      "lazyUntil": "immediate"
+    },
+    {
+      "id": "search-sidebar",
+      "routePattern": "/search*",
+      "section": "Sidebar",
+      "status": "preview",
+      "provider": "affiliates",
+      "countries": ["RO"],
+      "sizes": [
+        { "width": 300, "height": 250 },
+        { "width": 320, "height": 100 }
+      ],
+      "updatedAt": "2025-08-21T08:45:00.000Z",
+      "createdAt": "2025-08-19T11:30:00.000Z",
+      "unitPath": "",
+      "targeting": {
+        "intent": "shopping"
+      },
+      "lazyUntil": "visible"
+    },
+    {
+      "id": "product-bottom-banner",
+      "routePattern": "/product/*",
+      "section": "Bottom Banner",
+      "status": "off",
+      "provider": "house",
+      "countries": ["RO", "MD", "BG"],
+      "sizes": [
+        { "width": 728, "height": 90 }
+      ],
+      "updatedAt": "2025-08-20T16:20:00.000Z",
+      "createdAt": "2025-08-18T09:00:00.000Z",
+      "unitPath": "",
+      "targeting": {},
+      "lazyUntil": "idle"
+    },
+    {
+      "id": "dashboard-promo",
+      "routePattern": "/dashboard",
+      "section": "Promo Card",
+      "status": "on",
+      "provider": "house",
+      "countries": ["RO"],
+      "sizes": [
+        { "width": 400, "height": 200 }
+      ],
+      "updatedAt": "2025-08-21T07:30:00.000Z",
+      "createdAt": "2025-08-17T15:45:00.000Z",
+      "unitPath": "",
+      "targeting": {
+        "userType": "premium"
+      },
+      "lazyUntil": "visible"
+    }
+  ],
+  "auditLog": [
+    {
+      "id": "audit-001",
+      "timestamp": "2025-08-21T10:30:00.000Z",
+      "action": "updated",
+      "slotId": "home-hero-banner",
+      "userId": "admin-001",
+      "changes": {
+        "status": "on"
+      }
+    },
+    {
+      "id": "audit-002",
+      "timestamp": "2025-08-21T09:15:00.000Z",
+      "action": "created",
+      "slotId": "search-sidebar",
+      "userId": "admin-001"
+    }
+  ]
+}

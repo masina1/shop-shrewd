@@ -30,6 +30,7 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import OfferDetail from "./pages/OfferDetail";
 import AdminReview from "./pages/admin/AdminReview";
 import AdminOfferDetail from "./pages/admin/AdminOfferDetail";
+import MonetizationPage from "./pages/admin/MonetizationPage";
 import { DebugPanel } from "./components/DebugPanel";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ const App = () => (
                 <Route path="/offers" element={<AdminOffers />} />
                 <Route path="/review" element={<AdminReview />} />
                 <Route path="/offers/:id" element={<AdminOfferDetail />} />
+                <Route path="/monetization" element={<MonetizationPage />} />
                 <Route path="/combos" element={<div className="p-6">Combos Admin - Coming Soon</div>} />
                 <Route path="/templates" element={<div className="p-6">Templates Admin - Coming Soon</div>} />
                 <Route path="/ingestion" element={<div className="p-6">Ingestion Admin - Coming Soon</div>} />

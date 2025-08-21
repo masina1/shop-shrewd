@@ -10,6 +10,7 @@ import {
   Shield,
   Users,
   Settings,
+  DollarSign,
   Menu,
   X
 } from "lucide-react";
@@ -29,6 +30,7 @@ const sidebarItems = [
   { titleKey: "ingestion", url: "/admin/ingestion", icon: Download },
   { titleKey: "moderation", url: "/admin/moderation", icon: Shield },
   { titleKey: "users", url: "/admin/users", icon: Users },
+  { titleKey: "monetization", url: "/admin/monetization", icon: DollarSign },
   { titleKey: "sidebar.settings", url: "/admin/settings", icon: Settings },
 ];
 
