@@ -24,6 +24,13 @@ import AdminProductForm from "./pages/admin/AdminProductForm";
 import AdminStores from "./pages/admin/AdminStores";
 import AdminOffers from "./pages/admin/AdminOffers";
 import AdminSettings from "./pages/admin/AdminSettings";
+import SubmitOffer from "./pages/SubmitOffer";
+import RewardsPage from "./pages/RewardsPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import OfferDetail from "./pages/OfferDetail";
+import AdminReview from "./pages/admin/AdminReview";
+import AdminOfferDetail from "./pages/admin/AdminOfferDetail";
+import { DebugPanel } from "./components/DebugPanel";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +55,8 @@ const App = () => (
                 <Route path="/products/:id" element={<AdminProductForm />} />
                 <Route path="/stores" element={<AdminStores />} />
                 <Route path="/offers" element={<AdminOffers />} />
+                <Route path="/review" element={<AdminReview />} />
+                <Route path="/offers/:id" element={<AdminOfferDetail />} />
                 <Route path="/combos" element={<div className="p-6">Combos Admin - Coming Soon</div>} />
                 <Route path="/templates" element={<div className="p-6">Templates Admin - Coming Soon</div>} />
                 <Route path="/ingestion" element={<div className="p-6">Ingestion Admin - Coming Soon</div>} />
@@ -73,6 +82,10 @@ const App = () => (
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/app" element={<AppPromoPage />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/submit-offer" element={<SubmitOffer />} />
+                <Route path="/rewards" element={<RewardsPage />} />
+                <Route path="/leaderboard" element={<LeaderboardPage />} />
+                <Route path="/offer/:id" element={<OfferDetail />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
@@ -80,6 +93,7 @@ const App = () => (
           } />
         </Routes>
       </BrowserRouter>
+      <DebugPanel />
     </TooltipProvider>
   </QueryClientProvider>
 );
