@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import { AdminLayout } from "./components/admin/AdminLayout";
 import Home from "./pages/Home";
 import SearchResults from "./pages/SearchResults";
 import ProductPage from "./pages/ProductPage";
@@ -17,6 +18,12 @@ import Dashboard from "./pages/Dashboard";
 import AuthLogin from "./pages/auth/AuthLogin";
 import AuthRegister from "./pages/auth/AuthRegister";
 import NotFound from "./pages/NotFound";
+import AdminOverview from "./pages/admin/AdminOverview";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminProductForm from "./pages/admin/AdminProductForm";
+import AdminStores from "./pages/admin/AdminStores";
+import AdminOffers from "./pages/admin/AdminOffers";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +37,27 @@ const App = () => (
           {/* Auth routes without layout */}
           <Route path="/auth/login" element={<AuthLogin />} />
           <Route path="/auth/register" element={<AuthRegister />} />
+          
+          {/* Admin routes with admin layout */}
+          <Route path="/admin/*" element={
+            <AdminLayout>
+              <Routes>
+                <Route path="/" element={<AdminOverview />} />
+                <Route path="/products" element={<AdminProducts />} />
+                <Route path="/products/new" element={<AdminProductForm />} />
+                <Route path="/products/:id" element={<AdminProductForm />} />
+                <Route path="/stores" element={<AdminStores />} />
+                <Route path="/offers" element={<AdminOffers />} />
+                <Route path="/combos" element={<div className="p-6">Combos Admin - Coming Soon</div>} />
+                <Route path="/templates" element={<div className="p-6">Templates Admin - Coming Soon</div>} />
+                <Route path="/ingestion" element={<div className="p-6">Ingestion Admin - Coming Soon</div>} />
+                <Route path="/moderation" element={<div className="p-6">Moderation Admin - Coming Soon</div>} />
+                <Route path="/users" element={<div className="p-6">Users Admin - Coming Soon</div>} />
+                <Route path="/settings" element={<AdminSettings />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AdminLayout>
+          } />
           
           {/* Main app routes with layout */}
           <Route path="/*" element={
