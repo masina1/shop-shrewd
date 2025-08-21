@@ -1,8 +1,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import HttpBackend from 'i18next-http-backend';
 
 i18n
+  .use(HttpBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -24,24 +26,9 @@ i18n
       escapeValue: false, // React already escapes
     },
 
-    // Resource loading
+    // Backend configuration for loading translation files
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
-    },
-
-    resources: {
-      en: {
-        common: require('../../public/locales/en/common.json'),
-        navigation: require('../../public/locales/en/navigation.json'),
-        auth: require('../../public/locales/en/auth.json'),
-        admin: require('../../public/locales/en/admin.json'),
-      },
-      ro: {
-        common: require('../../public/locales/ro/common.json'),
-        navigation: require('../../public/locales/ro/navigation.json'),
-        auth: require('../../public/locales/ro/auth.json'),
-        admin: require('../../public/locales/ro/admin.json'),
-      },
     },
   });
 
