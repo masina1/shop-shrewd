@@ -71,7 +71,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       >
         <div className="flex h-full flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-sidebar-border">
+          <div className="flex h-16 items-center justify-between px-6 border-b border-sidebar-border">
             <h2 className="text-lg font-semibold text-sidebar-foreground">
               Admin Panel
             </h2>
