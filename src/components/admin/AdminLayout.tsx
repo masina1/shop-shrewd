@@ -18,7 +18,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       />
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="lg:pl-64 m-0 p-0">
         {/* Topbar */}
         <AdminTopbar onMenuClick={() => setSidebarOpen(true)} />
 
