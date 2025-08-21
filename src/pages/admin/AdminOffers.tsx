@@ -44,7 +44,7 @@ import {
   AlertCircle,
   Link as LinkIcon
 } from "lucide-react";
-import { mockOffers, mockProducts, mockStores, Offer, getProductById, getStoreById } from "@/lib/adminMockData";
+import { mockOffers, mockProducts, mockStores, type Offer, getProductById, getStoreById } from "@/lib/adminMockData";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminOffers() {

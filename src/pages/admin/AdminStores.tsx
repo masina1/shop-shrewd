@@ -21,7 +21,7 @@ import {
   Globe,
   Palette
 } from "lucide-react";
-import { mockStores, Store } from "@/lib/adminMockData";
+import { mockStores, type Store } from "@/lib/adminMockData";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminStores() {

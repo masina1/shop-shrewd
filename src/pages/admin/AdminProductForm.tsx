@@ -15,7 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Upload, X, TrendingUp } from "lucide-react";
-import { getProductById, getOffersForProduct, mockProducts, Product } from "@/lib/adminMockData";
+import { getProductById, getOffersForProduct, mockProducts, type Product } from "@/lib/adminMockData";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminProductForm() {

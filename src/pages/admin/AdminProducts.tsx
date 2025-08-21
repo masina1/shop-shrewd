@@ -39,7 +39,7 @@ import {
   Archive,
   Merge
 } from "lucide-react";
-import { mockProducts, Product } from "@/lib/adminMockData";
+import { mockProducts, type Product } from "@/lib/adminMockData";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminProducts() {
