@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Settings, RotateCcw, User, Shield, ChevronUp, ChevronDown } from 'lucide-react';
+import { Settings, RotateCcw, User, Shield, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { resetDemoData, currentUser } from '@/lib/rewardsMockData';
 import { toast } from '@/hooks/use-toast';
 
@@ -11,6 +12,7 @@ type UserMode = 'user' | 'admin';
 export function DebugPanel() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [userMode, setUserMode] = useState<UserMode>('user');
+  const [adsPreview, setAdsPreview] = useState(false);
 
   const handleResetData = () => {
     resetDemoData();
@@ -31,9 +33,17 @@ export function DebugPanel() {
     });
   };
 
+  const handleAdsToggle = () => {
+    setAdsPreview(!adsPreview);
+    toast({
+      title: 'Ads Preview',
+      description: `Ads preview ${!adsPreview ? 'enabled' : 'disabled'}. Navigate pages to see placeholders.`
+    });
+  };
+
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <Card className="w-80 shadow-lg border-2">
+      <Card className="w-80 shadow-lg border-2 bg-background/80 backdrop-blur-sm hover:bg-background/95 transition-all duration-300">
         <CardContent className="p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-3">
@@ -110,6 +120,30 @@ export function DebugPanel() {
                   {userMode === 'admin' 
                     ? 'Access admin routes (/admin/*)' 
                     : 'Access user routes (rewards, leaderboard, etc.)'}
+                </div>
+              </div>
+
+              {/* Ads Preview */}
+              <div className="space-y-2">
+                <div className="text-sm font-medium">Ads Preview</div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="ads-preview" 
+                    checked={adsPreview}
+                    onCheckedChange={(checked) => setAdsPreview(checked === true)}
+                  />
+                  <label 
+                    htmlFor="ads-preview" 
+                    className="text-sm cursor-pointer flex items-center gap-1"
+                  >
+                    {adsPreview ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                    Show Ad Placeholders
+                  </label>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {adsPreview 
+                    ? 'Ad placeholders visible site-wide' 
+                    : 'Ad placeholders hidden'}
                 </div>
               </div>
 

@@ -196,7 +196,18 @@ export default function MonetizationPage() {
         return acc;
       }, {} as Record<string, string>);
 
-      const slotData = { ...data, targeting };
+      // Ensure all required fields are present and properly typed
+      const slotData: Omit<AdSlot, 'id' | 'createdAt' | 'updatedAt'> = {
+        routePattern: data.routePattern,
+        section: data.section,
+        status: data.status,
+        provider: data.provider,
+        countries: data.countries,
+        sizes: data.sizes.filter((s): s is AdSize => s.width > 0 && s.height > 0),
+        unitPath: data.unitPath,
+        targeting,
+        lazyUntil: data.lazyUntil
+      };
 
       if (editingSlot) {
         await adConfigClient.updateSlot(editingSlot.id, slotData);
