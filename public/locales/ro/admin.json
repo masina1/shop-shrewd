@@ -1,0 +1,85 @@
+{
+  "sidebar": {
+    "admin_panel": "Panou Admin",
+    "overview": "Prezentare generală",
+    "products": "Produse",
+    "stores": "Magazine",
+    "offers": "Oferte",
+    "settings": "Setări"
+  },
+  "topbar": {
+    "search_placeholder": "Căutare...",
+    "quick_add": "Adăugare rapidă",
+    "add_product": "Adaugă produs",
+    "add_store": "Adaugă magazin",
+    "add_offer": "Adaugă ofertă",
+    "add_combo": "Adaugă combo",
+    "profile": "Profil",
+    "logout": "Deconectare"
+  },
+  "overview": {
+    "title": "Prezentare generală",
+    "subtitle": "Bun venit în panoul de administrare",
+    "total_products": "Total produse",
+    "active_stores": "Magazine active",
+    "pending_offers": "Oferte în așteptare",
+    "revenue": "Venituri"
+  },
+  "products": {
+    "title": "Gestionare produse",
+    "subtitle": "Gestionează catalogul de produse",
+    "add_product": "Adaugă produs",
+    "search_products": "Căutare produse...",
+    "view_grid": "Vedere grilă",
+    "view_list": "Vedere listă",
+    "name": "Nume produs",
+    "category": "Categorie",
+    "price": "Preț",
+    "store": "Magazin",
+    "status": "Status",
+    "actions": "Acțiuni",
+    "no_products": "Nu s-au găsit produse",
+    "create_first": "Creează primul produs"
+  },
+  "stores": {
+    "title": "Rețea magazine",
+    "subtitle": "Gestionează magazinele partenere și configurațiile de extragere",
+    "add_store": "Adaugă magazin",
+    "search_stores": "Căutare magazine...",
+    "store_name": "Nume magazin",
+    "scraping_method": "Metodă extragere",
+    "delivery_areas": "Zone de livrare",
+    "last_sync": "Ultima sincronizare",
+    "no_stores": "Nu s-au găsit magazine",
+    "api": "API",
+    "scraping": "Extragere",
+    "manual": "Manual"
+  },
+  "offers": {
+    "title": "Oferte speciale",
+    "subtitle": "Gestionează ofertele promoționale și reducerile",
+    "add_offer": "Adaugă ofertă",
+    "search_offers": "Căutare oferte...",
+    "offer_name": "Nume ofertă",
+    "discount": "Reducere",
+    "valid_until": "Valabil până la",
+    "stores": "Magazine",
+    "no_offers": "Nu s-au găsit oferte"
+  },
+  "settings": {
+    "title": "Setări",
+    "subtitle": "Configurează setările platformei",
+    "general": "General",
+    "search": "Căutare",
+    "pricing": "Prețuri",
+    "features": "Funcționalități",
+    "regions": "Regiuni",
+    "save_settings": "Salvează setările",
+    "platform_name": "Nume platformă",
+    "logo": "Logo",
+    "description": "Descriere",
+    "locale": "Limbă",
+    "timezone": "Fus orar",
+    "currency": "Valută"
+  }
+}

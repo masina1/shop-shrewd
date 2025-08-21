@@ -1,0 +1,30 @@
+{
+  "main": {
+    "home": "Home",
+    "combos": "Combos",
+    "lists": "Lists",
+    "about": "About",
+    "use_app": "Use App",
+    "dashboard": "Dashboard",
+    "my_lists": "My Lists",
+    "settings": "Settings",
+    "sign_in": "Sign In",
+    "sign_up": "Sign Up",
+    "logout": "Logout"
+  },
+  "mobile": {
+    "home": "Home",
+    "combos": "Combos", 
+    "lists": "Lists",
+    "profile": "Profile"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "admin": "Admin",
+    "products": "Products",
+    "stores": "Stores",
+    "offers": "Offers",
+    "settings": "Settings",
+    "overview": "Overview"
+  }
+}

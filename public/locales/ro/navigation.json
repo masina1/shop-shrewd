@@ -1,0 +1,30 @@
+{
+  "main": {
+    "home": "Acasă",
+    "combos": "Combo-uri",
+    "lists": "Lista",
+    "about": "Despre",
+    "use_app": "Folosește App-ul",
+    "dashboard": "Tablou de bord",
+    "my_lists": "Listele mele",
+    "settings": "Setări",
+    "sign_in": "Autentificare",
+    "sign_up": "Înregistrare",
+    "logout": "Deconectare"
+  },
+  "mobile": {
+    "home": "Acasă",
+    "combos": "Combo-uri",
+    "lists": "Lista",
+    "profile": "Profil"
+  },
+  "breadcrumbs": {
+    "home": "Acasă",
+    "admin": "Administrare",
+    "products": "Produse",
+    "stores": "Magazine",
+    "offers": "Oferte",
+    "settings": "Setări",
+    "overview": "Prezentare generală"
+  }
+}

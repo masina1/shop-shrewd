@@ -18,6 +18,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useLocation, Link } from "react-router-dom";
+import { useAdminTranslation } from "@/hooks/useTranslation";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface AdminTopbarProps {
   onMenuClick: () => void;
@@ -26,29 +28,30 @@ interface AdminTopbarProps {
 export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
+  const { t } = useAdminTranslation();
 
   const getBreadcrumbs = () => {
     const path = location.pathname;
     const segments = path.split('/').filter(Boolean);
     
     if (segments.length === 1 && segments[0] === 'admin') {
-      return [{ label: 'Overview', href: '/admin' }];
+      return [{ label: t('sidebar.overview'), href: '/admin' }];
     }
     
-    const breadcrumbs = [{ label: 'Overview', href: '/admin' }];
+    const breadcrumbs = [{ label: t('sidebar.overview'), href: '/admin' }];
     
     if (segments.length > 1) {
       const section = segments[1];
       const sectionLabels: Record<string, string> = {
-        products: 'Products',
-        stores: 'Stores',
-        offers: 'Offers',
+        products: t('sidebar.products'),
+        stores: t('sidebar.stores'),
+        offers: t('sidebar.offers'),
         combos: 'Combos',
         templates: 'Templates',
         ingestion: 'Ingestion',
         moderation: 'Moderation',
         users: 'Users',
-        settings: 'Settings'
+        settings: t('sidebar.settings')
       };
       
       breadcrumbs.push({
@@ -143,34 +146,37 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search products, stores..."
+            placeholder={t('topbar.search_placeholder')}
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
+        {/* Language Switcher */}
+        <LanguageSwitcher />
+
         {/* Quick add button */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="sm" className="gap-2">
               <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Add</span>
+              <span className="hidden sm:inline">{t('topbar.quick_add')}</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => handleQuickAdd('product')}>
-              Add Product
+              {t('topbar.add_product')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleQuickAdd('store')}>
-              Add Store
+              {t('topbar.add_store')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleQuickAdd('offer')}>
-              Add Offer
+              {t('topbar.add_offer')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleQuickAdd('combo')}>
-              Add Combo
+              {t('topbar.add_combo')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -185,12 +191,12 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
           <DropdownMenuContent align="end">
             <DropdownMenuItem>
               <User className="mr-2 h-4 w-4" />
-              Admin Profile
+              {t('topbar.profile')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut className="mr-2 h-4 w-4" />
-              Sign out
+              {t('topbar.logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

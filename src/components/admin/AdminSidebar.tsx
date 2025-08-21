@@ -16,18 +16,19 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAdminTranslation } from "@/hooks/useTranslation";
 
 const sidebarItems = [
-  { title: "Overview", url: "/admin", icon: BarChart3 },
-  { title: "Products", url: "/admin/products", icon: Package },
-  { title: "Stores", url: "/admin/stores", icon: Store },
-  { title: "Offers", url: "/admin/offers", icon: Tag },
-  { title: "Combos", url: "/admin/combos", icon: Layers },
-  { title: "Templates", url: "/admin/templates", icon: FileText },
-  { title: "Ingestion", url: "/admin/ingestion", icon: Download },
-  { title: "Moderation", url: "/admin/moderation", icon: Shield },
-  { title: "Users", url: "/admin/users", icon: Users },
-  { title: "Settings", url: "/admin/settings", icon: Settings },
+  { titleKey: "sidebar.overview", url: "/admin", icon: BarChart3 },
+  { titleKey: "sidebar.products", url: "/admin/products", icon: Package },
+  { titleKey: "sidebar.stores", url: "/admin/stores", icon: Store },
+  { titleKey: "sidebar.offers", url: "/admin/offers", icon: Tag },
+  { titleKey: "combos", url: "/admin/combos", icon: Layers },
+  { titleKey: "templates", url: "/admin/templates", icon: FileText },
+  { titleKey: "ingestion", url: "/admin/ingestion", icon: Download },
+  { titleKey: "moderation", url: "/admin/moderation", icon: Shield },
+  { titleKey: "users", url: "/admin/users", icon: Users },
+  { titleKey: "sidebar.settings", url: "/admin/settings", icon: Settings },
 ];
 
 interface AdminSidebarProps {
@@ -38,6 +39,7 @@ interface AdminSidebarProps {
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { t } = useAdminTranslation();
 
   const isActive = (path: string) => {
     if (path === "/admin") {
@@ -73,7 +75,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           {/* Header */}
           <div className="flex h-16 items-center justify-between px-6 border-b border-sidebar-border">
             <h2 className="text-lg font-semibold text-sidebar-foreground">
-              Admin Panel
+              {t('sidebar.admin_panel')}
             </h2>
             <Button
               variant="ghost"
@@ -92,7 +94,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               {sidebarItems.map((item) => {
                 const active = isActive(item.url);
                 return (
-                  <li key={item.title}>
+                  <li key={item.titleKey}>
                     <NavLink
                       to={item.url}
                       onClick={onClose}
@@ -105,7 +107,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                       aria-current={active ? "page" : undefined}
                     >
                       <item.icon className="h-4 w-4" aria-hidden="true" />
-                      <span>{item.title}</span>
+                      <span>{t(item.titleKey)}</span>
                     </NavLink>
                   </li>
                 );

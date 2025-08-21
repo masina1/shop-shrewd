@@ -10,10 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useNavigationTranslation } from "@/hooks/useTranslation";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useNavigationTranslation();
   
   // Mock authentication state - in real app this would come from auth context
   const [isAuthenticated] = useState(false);
@@ -22,11 +25,11 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = [
-    { path: "/", label: "Home", icon: Home },
-    { path: "/combos", label: "Combos", icon: Package },
-    { path: "/lists", label: "Lists", icon: Heart },
-    { path: "/about", label: "About", icon: Info },
-    { path: "/app", label: "Use App", icon: Smartphone },
+    { path: "/", labelKey: "main.home", icon: Home },
+    { path: "/combos", labelKey: "main.combos", icon: Package },
+    { path: "/lists", labelKey: "main.lists", icon: Heart },
+    { path: "/about", labelKey: "main.about", icon: Info },
+    { path: "/app", labelKey: "main.use_app", icon: Smartphone },
   ];
 
   return (
@@ -57,10 +60,15 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                   isActive(item.path) ? "text-foreground" : "text-foreground/60"
                 }`}
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
           </nav>
+
+          {/* Language Switcher */}
+          <div className="hidden md:block">
+            <LanguageSwitcher />
+          </div>
 
           {/* Mobile Menu Button */}
           <button
@@ -90,25 +98,25 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard" className="flex items-center">
                         <BarChart3 className="mr-2 h-4 w-4" />
-                        Dashboard
+                        {t('main.dashboard')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/lists" className="flex items-center">
                         <Heart className="mr-2 h-4 w-4" />
-                        My Lists
+                        {t('main.my_lists')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/settings" className="flex items-center">
                         <Settings className="mr-2 h-4 w-4" />
-                        Settings
+                        {t('main.settings')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-destructive">
                       <LogOut className="mr-2 h-4 w-4" />
-                      Logout
+                      {t('main.logout')}
                     </DropdownMenuItem>
                   </>
                 ) : (
@@ -116,13 +124,13 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                     <DropdownMenuItem asChild>
                       <Link to="/auth/login" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
-                        Sign In
+                        {t('main.sign_in')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/auth/register" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
-                        Sign Up
+                        {t('main.sign_up')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -159,7 +167,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Icon className="h-4 w-4" />
-                    <span>{item.label}</span>
+                    <span>{t(item.labelKey)}</span>
                   </Link>
                 );
               })}
@@ -187,7 +195,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                 }`}
               >
                 <Icon className="h-5 w-5 mb-1" />
-                <span className="text-[10px]">{item.label}</span>
+                <span className="text-[10px]">{t(item.labelKey)}</span>
               </Link>
             );
           })}
@@ -195,7 +203,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             <DropdownMenuTrigger asChild>
               <button className="flex-1 flex flex-col items-center py-2 px-1 text-xs text-muted-foreground">
                 <User className="h-5 w-5 mb-1" />
-                <span className="text-[10px]">Profile</span>
+                <span className="text-[10px]">{t('mobile.profile')}</span>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 mb-2">
@@ -209,25 +217,25 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard" className="flex items-center">
                       <BarChart3 className="mr-2 h-4 w-4" />
-                      Dashboard
+                      {t('main.dashboard')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/lists" className="flex items-center">
                       <Heart className="mr-2 h-4 w-4" />
-                      My Lists
+                      {t('main.my_lists')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/settings" className="flex items-center">
                       <Settings className="mr-2 h-4 w-4" />
-                      Settings
+                      {t('main.settings')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Logout
+                    {t('main.logout')}
                   </DropdownMenuItem>
                 </>
               ) : (
@@ -235,13 +243,13 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                   <DropdownMenuItem asChild>
                     <Link to="/auth/login" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      Sign In
+                      {t('main.sign_in')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/auth/register" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      Sign Up
+                      {t('main.sign_up')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

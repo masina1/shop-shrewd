@@ -1,0 +1,85 @@
+{
+  "sidebar": {
+    "admin_panel": "Admin Panel",
+    "overview": "Overview",
+    "products": "Products",
+    "stores": "Stores", 
+    "offers": "Offers",
+    "settings": "Settings"
+  },
+  "topbar": {
+    "search_placeholder": "Search...",
+    "quick_add": "Quick Add",
+    "add_product": "Add Product",
+    "add_store": "Add Store",
+    "add_offer": "Add Offer",
+    "add_combo": "Add Combo",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "overview": {
+    "title": "Dashboard Overview",
+    "subtitle": "Welcome to your admin dashboard",
+    "total_products": "Total Products",
+    "active_stores": "Active Stores",
+    "pending_offers": "Pending Offers",
+    "revenue": "Revenue"
+  },
+  "products": {
+    "title": "Product Management",
+    "subtitle": "Manage your product catalog",
+    "add_product": "Add Product",
+    "search_products": "Search products...",
+    "view_grid": "Grid View",
+    "view_list": "List View",
+    "name": "Product Name",
+    "category": "Category",
+    "price": "Price",
+    "store": "Store",
+    "status": "Status",
+    "actions": "Actions",
+    "no_products": "No products found",
+    "create_first": "Create your first product"
+  },
+  "stores": {
+    "title": "Store Network",
+    "subtitle": "Manage your partner stores and scraping configurations",
+    "add_store": "Add Store",
+    "search_stores": "Search stores...",
+    "store_name": "Store Name",
+    "scraping_method": "Scraping Method",
+    "delivery_areas": "Delivery Areas",
+    "last_sync": "Last Sync",
+    "no_stores": "No stores found",
+    "api": "API",
+    "scraping": "Scraping", 
+    "manual": "Manual"
+  },
+  "offers": {
+    "title": "Special Offers",
+    "subtitle": "Manage promotional offers and discounts",
+    "add_offer": "Add Offer",
+    "search_offers": "Search offers...",
+    "offer_name": "Offer Name",
+    "discount": "Discount",
+    "valid_until": "Valid Until",
+    "stores": "Stores",
+    "no_offers": "No offers found"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure your platform settings",
+    "general": "General",
+    "search": "Search",
+    "pricing": "Pricing",
+    "features": "Features",
+    "regions": "Regions",
+    "save_settings": "Save Settings",
+    "platform_name": "Platform Name",
+    "logo": "Logo",
+    "description": "Description",
+    "locale": "Language",
+    "timezone": "Timezone",
+    "currency": "Currency"
+  }
+}
