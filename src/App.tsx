@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AdsProvider } from "@/contexts/AdsContext";
 import { Layout } from "./components/Layout";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import Home from "./pages/Home";
@@ -38,9 +39,10 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+      <AdsProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
         <Routes>
           {/* Auth routes without layout */}
           <Route path="/auth/login" element={<AuthLogin />} />
@@ -94,8 +96,9 @@ const App = () => (
             </Layout>
           } />
         </Routes>
-      </BrowserRouter>
-      <DebugPanel />
+        </BrowserRouter>
+        <DebugPanel />
+      </AdsProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

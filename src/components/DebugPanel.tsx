@@ -6,13 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { resetDemoData, currentUser } from '@/lib/rewardsMockData';
 import { toast } from '@/hooks/use-toast';
+import { useAds } from '@/contexts/AdsContext';
 
 type UserMode = 'user' | 'admin';
 
 export function DebugPanel() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [userMode, setUserMode] = useState<UserMode>('user');
-  const [adsPreview, setAdsPreview] = useState(false);
+  const { previewMode, setPreviewMode } = useAds();
 
   const handleResetData = () => {
     resetDemoData();
@@ -30,14 +31,6 @@ export function DebugPanel() {
     toast({
       title: 'Mode Switched',
       description: `Switched to ${newMode} mode. Navigate to appropriate pages.`
-    });
-  };
-
-  const handleAdsToggle = () => {
-    setAdsPreview(!adsPreview);
-    toast({
-      title: 'Ads Preview',
-      description: `Ads preview ${!adsPreview ? 'enabled' : 'disabled'}. Navigate pages to see placeholders.`
     });
   };
 
@@ -129,19 +122,25 @@ export function DebugPanel() {
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="ads-preview" 
-                    checked={adsPreview}
-                    onCheckedChange={(checked) => setAdsPreview(checked === true)}
+                    checked={previewMode}
+                    onCheckedChange={(checked) => {
+                      setPreviewMode(checked === true);
+                      toast({
+                        title: 'Ads Preview',
+                        description: `Ads preview ${checked ? 'enabled' : 'disabled'}. Navigate pages to see placeholders.`
+                      });
+                    }}
                   />
                   <label 
                     htmlFor="ads-preview" 
                     className="text-sm cursor-pointer flex items-center gap-1"
                   >
-                    {adsPreview ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                    {previewMode ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                     Show Ad Placeholders
                   </label>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {adsPreview 
+                  {previewMode 
                     ? 'Ad placeholders visible site-wide' 
                     : 'Ad placeholders hidden'}
                 </div>

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Badge, ShoppingCart, TrendingDown, Zap } from "lucide-react";
 import { mockProducts, mockCombos } from "@/lib/mockData";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 export default function Home() {
   const featuredProduct = mockProducts[0]; // Lapte 1.5%
@@ -13,6 +14,26 @@ export default function Home() {
         <h1 className="text-2xl font-bold mb-4 text-center">
           Today's Best Deal
         </h1>
+        
+        {/* Hero Ad */}
+        <div className="flex justify-center mb-6">
+          <AdSlot 
+            slot={{
+              id: 'hero-banner',
+              routePattern: '/',
+              section: 'Hero Banner',
+              status: 'off',
+              provider: 'gpt',
+              countries: ['RO'],
+              sizes: [{ width: 728, height: 90 }],
+              updatedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
+              unitPath: '/ads/hero-banner',
+              targeting: { page: 'home', section: 'hero' },
+              lazyUntil: 'visible'
+            }}
+          />
+        </div>
         
         <div className="relative overflow-hidden rounded-2xl shadow-large">
           <div className="absolute inset-0 gradient-success opacity-90" />
@@ -54,6 +75,25 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Sidebar Ad */}
+      <div className="flex justify-center mb-6">
+        <AdSlot 
+          slot={{
+            id: 'home-content',
+            routePattern: '/',
+            section: 'Content',
+            status: 'off',
+            provider: 'house',
+            countries: ['RO'],
+            sizes: [{ width: 300, height: 250 }],
+            updatedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            targeting: { page: 'home', position: 'content' },
+            lazyUntil: 'visible'
+          }}
+        />
+      </div>
 
       {/* Other Offers */}
       <section className="mb-8">

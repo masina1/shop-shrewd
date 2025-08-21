@@ -1,5 +1,6 @@
 import { AdSlot as AdSlotType } from '@/types/ads';
 import { cn } from '@/lib/utils';
+import { useAds } from '@/contexts/AdsContext';
 
 interface AdSlotProps {
   slot: AdSlotType;
@@ -8,15 +9,17 @@ interface AdSlotProps {
 }
 
 export function AdSlot({ slot, className, showPreview = false }: AdSlotProps) {
-  // Don't render anything if status is off and not in preview mode
-  if (slot.status === 'off' && !showPreview) {
+  const { previewMode } = useAds();
+  
+  // Don't render anything if status is off and not in global preview mode and not forced preview
+  if (slot.status === 'off' && !previewMode && !showPreview) {
     return null;
   }
 
   // Get the largest size for display
   const primarySize = slot.sizes[0] || { width: 300, height: 250 };
   
-  const isPreviewMode = slot.status === 'preview' || showPreview;
+  const isPreviewMode = slot.status === 'preview' || previewMode || showPreview;
   
   return (
     <div

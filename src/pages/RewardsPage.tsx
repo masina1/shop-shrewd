@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { currentUser, badges, userActivity, getUserBadge, getNextBadge, submittedOffers, leaderboardUsers } from '@/lib/rewardsMockData';
+import { AdSlot } from '@/components/ads/AdSlot';
 
 export default function RewardsPage() {
   const currentBadge = getUserBadge(currentUser.id);
@@ -86,6 +87,25 @@ export default function RewardsPage() {
           </Card>
         </div>
 
+        {/* Top Ad */}
+        <div className="flex justify-center mb-6">
+          <AdSlot 
+            slot={{
+              id: 'rewards-top',
+              routePattern: '/rewards',
+              section: 'Rewards Top',
+              status: 'off',
+              provider: 'affiliates',
+              countries: ['RO'],
+              sizes: [{ width: 728, height: 90 }],
+              updatedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
+              targeting: { page: 'rewards', position: 'top' },
+              lazyUntil: 'visible'
+            }}
+          />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
@@ -159,6 +179,25 @@ export default function RewardsPage() {
 
           {/* Right Column */}
           <div className="space-y-6">
+            {/* Sidebar Ad */}
+            <div className="flex justify-center">
+              <AdSlot 
+                slot={{
+                  id: 'rewards-sidebar',
+                  routePattern: '/rewards',
+                  section: 'Rewards Sidebar',
+                  status: 'off',
+                  provider: 'gpt',
+                  countries: ['RO'],
+                  sizes: [{ width: 300, height: 250 }],
+                  updatedAt: new Date().toISOString(),
+                  createdAt: new Date().toISOString(),
+                  targeting: { page: 'rewards', position: 'sidebar' },
+                  lazyUntil: 'idle'
+                }}
+              />
+            </div>
+
             {/* All Badges */}
             <Card className="rounded-2xl">
               <CardHeader>
