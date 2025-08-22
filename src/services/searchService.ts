@@ -1,3 +1,4 @@
+
 import { SearchParams, SearchResult, Product, SearchResultItem, FacetCounts, StoreId } from '@/types/search';
 
 // Mock data - replace with API calls later
@@ -192,21 +193,31 @@ function computeFacets(filteredProducts: Product[], allProducts: Product[], para
     });
   });
 
-  // Compute category counts
+  // Compute category counts with proper hierarchy
   const categoryCounts: Record<string, number> = {};
   filteredProducts.forEach(product => {
     product.categoryPath.forEach((cat, index) => {
-      const path = product.categoryPath.slice(0, index + 1).join('/');
+      const path = product.categoryPath.slice(0, index + 1).map(c => c.toLowerCase()).join('/');
       if (!categoryCounts[path]) categoryCounts[path] = 0;
       categoryCounts[path]++;
     });
   });
 
+  // Build categories with parent relationships
   const categories = Object.entries(categoryCounts).map(([path, count]) => {
     const parts = path.split('/');
     const name = parts[parts.length - 1];
     const parentId = parts.length > 1 ? parts.slice(0, -1).join('/') : undefined;
-    return { id: path, name, count, parentId };
+    
+    // Capitalize the name for display
+    const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+    
+    return { 
+      id: path, 
+      name: displayName, 
+      count, 
+      parentId 
+    };
   });
 
   // Compute price bounds

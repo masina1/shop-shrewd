@@ -59,8 +59,30 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
     onFiltersChange({ min, max });
   };
 
-  // Get top-level categories
-  const topLevelCategories = facets?.categories.filter(cat => !cat.parentId) || [];
+  // Get categories to display - show both top-level and relevant subcategories
+  const getCategoriesToShow = () => {
+    if (!facets?.categories) return [];
+    
+    const allCategories = facets.categories;
+    const selectedCategory = searchParams.cat;
+    
+    if (!selectedCategory) {
+      // Show only top-level categories when nothing is selected
+      return allCategories.filter(cat => !cat.parentId);
+    }
+    
+    // If a category is selected, show:
+    // 1. All top-level categories
+    // 2. Subcategories of the selected category (if it's a parent)
+    const topLevel = allCategories.filter(cat => !cat.parentId);
+    const subcategories = allCategories.filter(cat => 
+      cat.parentId && cat.id.startsWith(selectedCategory + '/')
+    );
+    
+    return [...topLevel, ...subcategories];
+  };
+
+  const categoriesToShow = getCategoriesToShow();
   
   return (
     <div className="hidden lg:flex w-80 bg-card border-r border-border">
@@ -228,20 +250,29 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
                       </div>
                     ))
                   ) : (
-                    topLevelCategories.map((category) => (
-                      <button
-                        key={category.id}
-                        onClick={() => handleCategoryChange(category.id.toLowerCase())}
-                        className="flex items-center justify-between w-full p-2 hover:bg-muted/50 active:bg-muted rounded-md transition-all duration-200 ease-in-out text-left transform hover:scale-[1.02]"
-                      >
-                        <span className="text-sm font-medium">
-                          {category.name}
-                        </span>
-                        <Badge variant="secondary" className="text-xs">
-                          {category.count}
-                        </Badge>
-                      </button>
-                    ))
+                    categoriesToShow.map((category) => {
+                      const isSubcategory = !!category.parentId;
+                      const isSelected = searchParams.cat === category.id.toLowerCase();
+                      
+                      return (
+                        <button
+                          key={category.id}
+                          onClick={() => handleCategoryChange(category.id.toLowerCase())}
+                          className={`flex items-center justify-between w-full p-2 hover:bg-muted/50 active:bg-muted rounded-md transition-all duration-200 ease-in-out text-left transform hover:scale-[1.02] ${
+                            isSubcategory ? 'ml-4 text-sm' : ''
+                          } ${
+                            isSelected ? 'bg-muted font-medium' : ''
+                          }`}
+                        >
+                          <span className={isSubcategory ? 'text-sm' : 'text-sm font-medium'}>
+                            {isSubcategory ? '→ ' : ''}{category.name}
+                          </span>
+                          <Badge variant="secondary" className="text-xs">
+                            {category.count}
+                          </Badge>
+                        </button>
+                      );
+                    })
                   )}
                 </div>
               </div>
