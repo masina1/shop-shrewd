@@ -5,7 +5,6 @@ import { searchService } from '@/services/searchService';
 import { urlToSearchParams, searchParamsToUrl } from '@/utils/searchUtils';
 import { FilterSidebar } from './FilterSidebar';
 import { MobileFiltersSheet } from './MobileFiltersSheet';
-import { ActiveFiltersBar } from './ActiveFiltersBar';
 import { SortControl } from './SortControl';
 import { ResultSummary } from './ResultSummary';
 import { ProductGrid } from './ProductGrid';
@@ -98,12 +97,6 @@ export function SearchPage() {
               isLoading={isLoading}
             />
           </div>
-
-          {/* Active filters */}
-          <ActiveFiltersBar 
-            searchParams={searchParams}
-            onFiltersChange={updateSearchParams}
-          />
         </div>
 
         {/* Error state */}

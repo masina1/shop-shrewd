@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, X } from 'lucide-react';
 import { SearchParams, FacetCounts } from '@/types/search';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
@@ -70,6 +71,134 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
 
         <ScrollArea className="flex-1 h-[calc(100vh-200px)]">
           <div className="p-4 space-y-6">
+            
+            {/* Active Filters */}
+            {(searchParams.stores?.length || searchParams.cat || searchParams.min || searchParams.max || searchParams.promo || searchParams.inStock || searchParams.tags?.length) && (
+              <div className="pb-4 border-b border-border">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium text-sm">Active Filters</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onFiltersChange({
+                      stores: undefined,
+                      cat: undefined,
+                      min: undefined,
+                      max: undefined,
+                      promo: undefined,
+                      inStock: undefined,
+                      tags: undefined
+                    })}
+                    className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Clear all
+                  </Button>
+                </div>
+                
+                <div className={`space-y-2 ${
+                  ((searchParams.stores?.length || 0) + 
+                   (searchParams.tags?.length || 0) + 
+                   (searchParams.cat ? 1 : 0) + 
+                   ((searchParams.min || searchParams.max) ? 1 : 0) + 
+                   (searchParams.promo ? 1 : 0) + 
+                   (searchParams.inStock ? 1 : 0)) > 6 
+                    ? 'max-h-32 overflow-y-auto' 
+                    : ''
+                }`}>
+                  
+                  {/* Search query */}
+                  {searchParams.q && (
+                    <div className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                      <span>Search: "{searchParams.q}"</span>
+                    </div>
+                  )}
+
+                  {/* Category */}
+                  {searchParams.cat && (
+                    <div className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                      <span>Category: {searchParams.cat}</span>
+                      <button
+                        onClick={() => onFiltersChange({ cat: undefined })}
+                        className="hover:bg-muted rounded-sm p-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Stores */}
+                  {searchParams.stores?.map(storeId => (
+                    <div key={storeId} className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                      <span>{getStoreLabel(storeId)}</span>
+                      <button
+                        onClick={() => {
+                          const newStores = (searchParams.stores || []).filter(id => id !== storeId);
+                          onFiltersChange({ stores: newStores.length > 0 ? newStores : undefined });
+                        }}
+                        className="hover:bg-muted rounded-sm p-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Price range */}
+                  {(searchParams.min || searchParams.max) && (
+                    <div className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                      <span>Price: {searchParams.min || 0} - {searchParams.max || '∞'} RON</span>
+                      <button
+                        onClick={() => onFiltersChange({ min: undefined, max: undefined })}
+                        className="hover:bg-muted rounded-sm p-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Promo */}
+                  {searchParams.promo && (
+                    <div className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                      <span>Promo only</span>
+                      <button
+                        onClick={() => onFiltersChange({ promo: undefined })}
+                        className="hover:bg-muted rounded-sm p-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* In stock */}
+                  {searchParams.inStock && (
+                    <div className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                      <span>In stock</span>
+                      <button
+                        onClick={() => onFiltersChange({ inStock: undefined })}
+                        className="hover:bg-muted rounded-sm p-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Tags */}
+                  {searchParams.tags?.map(tag => (
+                    <div key={tag} className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                      <span>{getBadgeLabel(tag)}</span>
+                      <button
+                        onClick={() => {
+                          const newTags = (searchParams.tags || []).filter(t => t !== tag);
+                          onFiltersChange({ tags: newTags.length > 0 ? newTags : undefined });
+                        }}
+                        className="hover:bg-muted rounded-sm p-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             
             {/* Categories */}
             <div>
