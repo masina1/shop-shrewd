@@ -203,7 +203,6 @@ export function SearchPage() {
                 result={searchResult}
                 searchParams={searchParams}
                 onPageChange={(page) => updateSearchParams({ page })}
-                isLoading={isLoading}
               />
             ) : !isLoading ? (
               <div className="text-center py-12">

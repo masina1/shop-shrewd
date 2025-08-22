@@ -117,7 +117,7 @@ function normalizeProducts(products: typeof mockProducts, params: SearchParams):
         promoPct: offer.promoPct
       })),
       badges: product.badges,
-      availability: cheapest?.availability
+      availability: cheapest?.availability as 'in_stock' | 'limited' | 'out_of_stock' | undefined
     };
   });
 }
