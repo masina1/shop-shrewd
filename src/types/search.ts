@@ -1,45 +1,36 @@
 export type StoreId = 'kaufland' | 'carrefour' | 'mega' | 'auchan' | 'freshful' | string;
 
-export type Offer = {
-  store: StoreId;
-  price: number;           // RON
-  unitPrice?: string;      // "72,45 Lei/kg"
-  promoPct?: number;       // e.g. 38 for -38%
-  tags?: string[];         // ['eco','gluten_free','made_in_ro','congelat']
-  availability?: 'in_stock' | 'limited' | 'out_of_stock';
-  url?: string;
+export type FacetKind = 'category' | 'multi' | 'boolean' | 'brand' | 'price' | 'range';
+
+export type FacetOption = {
+  id: string;
+  label: string;
+  count: number;
+  parentId?: string;
 };
 
-export type Product = {
-  id: string;              // normalized cross-store id
-  name: string;
-  brand?: string;
-  image?: string;
-  categoryPath: string[];  // ['Dairy','Milk']
-  badges?: string[];       // same as tags, for UI
-  offers: Offer[];         // 1..n
+export type PriceBucket = {
+  from: number;
+  to: number;
+  count: number;
+  label: string;
 };
 
 export type SearchParams = {
   q?: string;
-  stores?: StoreId[];
-  cat?: string;     // "dairy/milk"
-  min?: number;
-  max?: number;
+  cat?: string;               // "bacanie/alimente-de-baza/lapte"
+  stores?: string[];          // ["freshful","carrefour"]
+  storeExclusive?: boolean;   // "Doar din acest magazin"
   promo?: boolean;
-  inStock?: boolean;
-  tags?: string[];  // ['eco', 'gluten_free', 'made_in_ro']
+  availability?: 'in_stock' | 'all';
+  props?: string[];           // ["eco","fara_gluten","made_in_ro","congelat"]
+  types?: string[];           // domain-specific filters like "ulei:extravirgin"
+  brand?: string[];
+  price_min?: number;
+  price_max?: number;
   sort?: 'relevance' | 'price_asc' | 'price_desc' | 'promo_desc' | 'newest';
   page?: number;
   pageSize?: number;
-};
-
-export type FacetCounts = {
-  stores: Record<StoreId, number>;
-  categories: Array<{ id: string; name: string; count: number; parentId?: string }>;
-  priceBounds: { min: number; max: number };
-  tags: Record<string, number>;
-  categoryLabels: Record<string, string>;
 };
 
 export type SearchResultItem = {
@@ -50,7 +41,7 @@ export type SearchResultItem = {
   categoryPath: string[];
   cheapest: { store: StoreId; price: number; promoPct?: number };
   otherStores: Array<{ store: StoreId; price: number; promoPct?: number }>;
-  badges?: string[];
+  badges?: string[];  // ['eco','made_in_ro','fara_gluten','congelat']
   availability?: 'in_stock' | 'limited' | 'out_of_stock';
 };
 
@@ -60,7 +51,19 @@ export type SearchResult = {
   page: number;
   pageSize: number;
   hasMore: boolean;
-  facets: FacetCounts;
+  facets: {
+    categories: FacetOption[];   // hierarchical (include parentId)
+    stores: Record<string, number>;
+    properties: FacetOption[];   // eco, fara_gluten, etc.
+    types: FacetOption[];        // domain-specific (Tip produs, Tip ulei…)
+    brands: FacetOption[];
+    price: { 
+      min: number; 
+      max: number; 
+      buckets: PriceBucket[];
+    };
+    activeCounts: Record<string, number>; // for group badges
+  };
 };
 
 export type WishlistOption = {
