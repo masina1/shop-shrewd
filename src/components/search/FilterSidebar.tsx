@@ -75,17 +75,21 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
             <div>
               <button
                 onClick={() => toggleSection('categories')}
-                className="flex items-center justify-between w-full p-2 hover:bg-muted rounded-md transition-colors"
+                className="flex items-center justify-between w-full p-2 hover:bg-muted/50 rounded-md transition-all duration-200 ease-in-out active:scale-[0.98]"
               >
                 <span className="font-medium">Categories</span>
                 {expandedSections.categories ? (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4 transition-transform duration-200" />
                 ) : (
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 transition-transform duration-200" />
                 )}
               </button>
               
-              {expandedSections.categories && (
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                expandedSections.categories 
+                  ? 'max-h-96 opacity-100' 
+                  : 'max-h-0 opacity-0'
+              }`}>
                 <div className="mt-3 space-y-2 pl-2">
                   {isLoading ? (
                     Array.from({ length: 4 }).map((_, i) => (
@@ -99,7 +103,7 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
                       <button
                         key={category.id}
                         onClick={() => handleCategoryChange(category.id.toLowerCase())}
-                        className="flex items-center justify-between w-full p-2 hover:bg-muted rounded-md transition-colors text-left"
+                        className="flex items-center justify-between w-full p-2 hover:bg-muted/50 active:bg-muted rounded-md transition-all duration-200 ease-in-out text-left transform hover:scale-[1.02]"
                       >
                         <span className="text-sm font-medium">
                           {category.name}
@@ -111,24 +115,28 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
                     ))
                   )}
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Stores */}
             <div>
               <button
                 onClick={() => toggleSection('stores')}
-                className="flex items-center justify-between w-full p-2 hover:bg-muted rounded-md transition-colors"
+                className="flex items-center justify-between w-full p-2 hover:bg-muted/50 rounded-md transition-all duration-200 ease-in-out active:scale-[0.98]"
               >
                 <span className="font-medium">Stores</span>
                 {expandedSections.stores ? (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4 transition-transform duration-200" />
                 ) : (
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 transition-transform duration-200" />
                 )}
               </button>
               
-              {expandedSections.stores && (
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                expandedSections.stores 
+                  ? 'max-h-96 opacity-100' 
+                  : 'max-h-0 opacity-0'
+              }`}>
                 <div className="mt-3 space-y-3 pl-2">
                   {isLoading ? (
                     Array.from({ length: 4 }).map((_, i) => (
@@ -142,8 +150,8 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
                     ))
                   ) : (
                     Object.entries(facets?.stores || {}).map(([storeId, count]) => (
-                      <div key={storeId} className="flex items-center justify-between">
-                        <label className="flex items-center space-x-2 flex-1 cursor-pointer">
+                      <div key={storeId} className="flex items-center justify-between transform transition-all duration-150 ease-in-out hover:scale-[1.01]">
+                        <label className="flex items-center space-x-2 flex-1 cursor-pointer p-1 rounded hover:bg-muted/30 transition-colors">
                           <Checkbox
                             checked={searchParams.stores?.includes(storeId) || false}
                             onCheckedChange={(checked) => 
@@ -159,24 +167,28 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
                     ))
                   )}
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Price Range */}
             <div>
               <button
                 onClick={() => toggleSection('price')}
-                className="flex items-center justify-between w-full p-2 hover:bg-muted rounded-md transition-colors"
+                className="flex items-center justify-between w-full p-2 hover:bg-muted/50 rounded-md transition-all duration-200 ease-in-out active:scale-[0.98]"
               >
                 <span className="font-medium">Price Range</span>
                 {expandedSections.price ? (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4 transition-transform duration-200" />
                 ) : (
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 transition-transform duration-200" />
                 )}
               </button>
               
-              {expandedSections.price && (
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                expandedSections.price 
+                  ? 'max-h-48 opacity-100' 
+                  : 'max-h-0 opacity-0'
+              }`}>
                 <div className="mt-3 pl-2">
                   {isLoading ? (
                     <div className="space-y-2">
@@ -195,33 +207,37 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
                     />
                   )}
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Quick Filters */}
             <div>
               <button
                 onClick={() => toggleSection('filters')}
-                className="flex items-center justify-between w-full p-2 hover:bg-muted rounded-md transition-colors"
+                className="flex items-center justify-between w-full p-2 hover:bg-muted/50 rounded-md transition-all duration-200 ease-in-out active:scale-[0.98]"
               >
                 <span className="font-medium">Quick Filters</span>
                 {expandedSections.filters ? (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4 transition-transform duration-200" />
                 ) : (
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 transition-transform duration-200" />
                 )}
               </button>
               
-              {expandedSections.filters && (
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                expandedSections.filters 
+                  ? 'max-h-32 opacity-100' 
+                  : 'max-h-0 opacity-0'
+              }`}>
                 <div className="mt-3 space-y-3 pl-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between p-2 rounded hover:bg-muted/30 transition-colors">
                     <span className="text-sm">Promo only</span>
                     <Switch
                       checked={searchParams.promo || false}
                       onCheckedChange={(checked) => onFiltersChange({ promo: checked })}
                     />
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between p-2 rounded hover:bg-muted/30 transition-colors">
                     <span className="text-sm">In stock</span>
                     <Switch
                       checked={searchParams.inStock || false}
@@ -229,24 +245,28 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
                     />
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Tags */}
             <div>
               <button
                 onClick={() => toggleSection('tags')}
-                className="flex items-center justify-between w-full p-2 hover:bg-muted rounded-md transition-colors"
+                className="flex items-center justify-between w-full p-2 hover:bg-muted/50 rounded-md transition-all duration-200 ease-in-out active:scale-[0.98]"
               >
                 <span className="font-medium">Product Tags</span>
                 {expandedSections.tags ? (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4 transition-transform duration-200" />
                 ) : (
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 transition-transform duration-200" />
                 )}
               </button>
               
-              {expandedSections.tags && (
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                expandedSections.tags 
+                  ? 'max-h-64 opacity-100' 
+                  : 'max-h-0 opacity-0'
+              }`}>
                 <div className="mt-3 space-y-3 pl-2">
                   {isLoading ? (
                     Array.from({ length: 3 }).map((_, i) => (
@@ -260,8 +280,8 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
                     ))
                   ) : (
                     Object.entries(facets?.tags || {}).map(([tag, count]) => (
-                      <div key={tag} className="flex items-center justify-between">
-                        <label className="flex items-center space-x-2 flex-1 cursor-pointer">
+                      <div key={tag} className="flex items-center justify-between transform transition-all duration-150 ease-in-out hover:scale-[1.01]">
+                        <label className="flex items-center space-x-2 flex-1 cursor-pointer p-1 rounded hover:bg-muted/30 transition-colors">
                           <Checkbox
                             checked={searchParams.tags?.includes(tag) || false}
                             onCheckedChange={(checked) => 
@@ -277,7 +297,7 @@ export function FilterSidebar({ searchParams, onFiltersChange, facets, isLoading
                     ))
                   )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </ScrollArea>
