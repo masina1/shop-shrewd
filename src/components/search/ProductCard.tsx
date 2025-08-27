@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Heart, Package, Store, Tag } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { SearchResultItem, WishlistOption, ComboOption } from '@/types/search';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -108,7 +109,12 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Product name and brand */}
           <div>
             <h3 className="font-semibold text-sm line-clamp-2 text-card-foreground mb-1">
-              {product.name}
+              <Link 
+                to={`/product/${product.id}`}
+                className="hover:text-primary transition-colors cursor-pointer"
+              >
+                {product.name}
+              </Link>
             </h3>
             {product.brand && (
               <p className="text-xs text-muted-foreground">{product.brand}</p>

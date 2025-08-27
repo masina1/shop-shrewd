@@ -21,6 +21,15 @@ export function searchParamsToUrl(params: SearchParams): string {
   if (params.props && params.props.length > 0) {
     urlParams.set('props', params.props.join(','));
   }
+  if (params.sort && params.sort !== 'relevance') {
+    urlParams.set('sort', params.sort);
+  }
+  if (params.page && params.page > 1) {
+    urlParams.set('page', params.page.toString());
+  }
+  if (params.pageSize && params.pageSize !== 24) {
+    urlParams.set('pageSize', params.pageSize.toString());
+  }
 
   return urlParams.toString();
 }
@@ -52,6 +61,15 @@ export function urlToSearchParams(searchParams: URLSearchParams): SearchParams {
   const props = searchParams.get('props');
   if (props) params.props = props.split(',');
   
+  const sort = searchParams.get('sort');
+  if (sort) params.sort = sort as any;
+  
+  const page = searchParams.get('page');
+  if (page) params.page = parseInt(page, 10);
+  
+  const pageSize = searchParams.get('pageSize');
+  if (pageSize) params.pageSize = parseInt(pageSize, 10);
+  
   return params;
 }
 
@@ -78,7 +96,8 @@ export function getStoreLabel(storeId: string): string {
     'carrefour': 'Carrefour',
     'mega': 'Mega Image',
     'auchan': 'Auchan',
-    'freshful': 'Freshful'
+    'freshful': 'Freshful',
+    'lidl': 'Lidl'
   };
   return labels[storeId] || storeId;
 }
@@ -89,7 +108,8 @@ export function getStoreBadgeClass(storeId: string): string {
     'carrefour': 'bg-blue-600 text-white',
     'mega': 'bg-yellow-600 text-white',
     'auchan': 'bg-orange-600 text-white',
-    'freshful': 'bg-green-600 text-white'
+    'freshful': 'bg-green-600 text-white',
+    'lidl': 'bg-blue-500 text-white'
   };
   return classes[storeId] || 'bg-muted text-muted-foreground';
 }

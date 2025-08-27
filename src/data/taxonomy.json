@@ -1,0 +1,53 @@
+{
+  "categories": {
+    "Lactate & Brânzeturi": {
+      "subcategories": ["Lapte", "Iaurt", "Brânză", "Smântână", "Unt", "Kefir"]
+    },
+    "Carne & Mezeluri": {
+      "subcategories": ["Carne", "Mezeluri", "Șuncă", "Salam", "Cârnați"]
+    },
+    "Pește": {
+      "subcategories": ["Pescărie", "Pește proaspăt", "Pește congelat", "Conserve pește"]
+    },
+    "Fructe & Legume": {
+      "subcategories": ["Fructe", "Legume", "Fructe uscate", "Legume congelate"]
+    },
+    "Băcănie": {
+      "subcategories": ["Uleiuri", "Pâine & Panificație", "Zahăr & Făină", "Conserve", "Paste", "Orez"]
+    },
+    "Băuturi": {
+      "subcategories": ["Apă", "Sucuri", "Cafea & Ceai", "Băuturi alcoolice", "Băuturi energizante"]
+    }
+  },
+  "storeMapping": {
+    "auchan:Alimente > Lactate si oua > Lapte UHT": "Lactate & Brânzeturi > Lapte",
+    "auchan:Alimente > Lactate si oua > Iaurt": "Lactate & Brânzeturi > Iaurt", 
+    "auchan:Alimente > Lactate si oua > Oua": "Lactate & Brânzeturi > Ouă",
+    "auchan:Alimente > Panificatie > Paine": "Băcănie > Pâine & Panificație",
+    "auchan:Alimente > Carne si mezeluri > Mezeluri": "Carne & Mezeluri > Mezeluri",
+    
+    "carrefour:Lactate si derivate > Lapte > Lapte pasteurizat": "Lactate & Brânzeturi > Lapte",
+    "carrefour:Lactate si derivate > Iaurt > Iaurt grecesc": "Lactate & Brânzeturi > Iaurt",
+    "carrefour:Lactate si derivate > Oua > Oua bio": "Lactate & Brânzeturi > Ouă",
+    "carrefour:Panificatie > Paine > Paine integrala": "Băcănie > Pâine & Panificație",
+    "carrefour:Carne si mezeluri > Mezeluri > Sunca": "Carne & Mezeluri > Șuncă",
+    
+    "kaufland:lapte": "Lactate & Brânzeturi > Lapte",
+    "kaufland:iaurt": "Lactate & Brânzeturi > Iaurt",
+    "kaufland:oua": "Lactate & Brânzeturi > Ouă",
+    "kaufland:panificatie": "Băcănie > Pâine & Panificație",
+    "kaufland:mezeluri": "Carne & Mezeluri > Mezeluri",
+    
+    "mega:Alimente/Lactate/Lapte": "Lactate & Brânzeturi > Lapte",
+    "mega:Alimente/Lactate/Iaurt": "Lactate & Brânzeturi > Iaurt",
+    "mega:Alimente/Lactate/Oua": "Lactate & Brânzeturi > Ouă", 
+    "mega:Alimente/Panificatie/Paine": "Băcănie > Pâine & Panificație",
+    "mega:Alimente/Carne/Mezeluri": "Carne & Mezeluri > Mezeluri",
+    
+    "freshful:dairy > milk": "Lactate & Brânzeturi > Lapte",
+    "freshful:dairy > yogurt": "Lactate & Brânzeturi > Iaurt",
+    "freshful:dairy > eggs": "Lactate & Brânzeturi > Ouă",
+    "freshful:bakery > bread": "Băcănie > Pâine & Panificație",
+    "freshful:meat > deli": "Carne & Mezeluri > Mezeluri"
+  }
+}

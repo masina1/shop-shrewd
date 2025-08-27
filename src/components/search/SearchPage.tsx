@@ -178,21 +178,43 @@ export function SearchPage() {
                   )}
                 </div>
 
-                {/* Sort control */}
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium">Sortare:</span>
-                  <Select value={searchParams.sort || 'relevance'} onValueChange={handleSortChange}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="relevance">Relevanță</SelectItem>
-                      <SelectItem value="price_asc">Preț crescător</SelectItem>
-                      <SelectItem value="price_desc">Preț descrescător</SelectItem>
-                      <SelectItem value="promo_desc">Reducere %</SelectItem>
-                      <SelectItem value="newest">Noutăți</SelectItem>
-                    </SelectContent>
-                  </Select>
+                {/* Sort and page size controls */}
+                <div className="flex items-center gap-6">
+                  {/* Page size control */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">Produse pe pagină:</span>
+                    <Select 
+                      value={String(searchParams.pageSize || 24)} 
+                      onValueChange={(value) => updateSearchParams({ pageSize: Number(value) })}
+                    >
+                      <SelectTrigger className="w-20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="24">24</SelectItem>
+                        <SelectItem value="48">48</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                        <SelectItem value="200">200</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Sort control */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">Sortare:</span>
+                    <Select value={searchParams.sort || 'relevance'} onValueChange={handleSortChange}>
+                      <SelectTrigger className="w-48">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="relevance">Relevanță</SelectItem>
+                        <SelectItem value="price_asc">Preț crescător</SelectItem>
+                        <SelectItem value="price_desc">Preț descrescător</SelectItem>
+                        <SelectItem value="promo_desc">Reducere %</SelectItem>
+                        <SelectItem value="newest">Noutăți</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             </div>

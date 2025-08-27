@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Scraped data files (exclude from repository)
+public/data/dev/
+public/data/prod/
+public/data/*/
+# But keep sample/example data files
+!public/data/README.md
+!public/data/sample/

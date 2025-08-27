@@ -1,0 +1,31 @@
+{
+  "milk": {
+    "integral": ["3.5", "3,5", "whole", "întreg"],
+    "semi": ["1.5", "1,5", "semi-degresat", "semidegresat"],
+    "degresat": ["0.1", "0,1", "skim", "fără grăsime"],
+    "uht": ["uht", "ultra-high", "ultra pasteurizat", "ultra-pasteurizat"],
+    "proaspat": ["proaspăt", "pasteurizat", "fresh"]
+  },
+  "bread": {
+    "integral": ["wholemeal", "whole grain", "multicereale"],
+    "alb": ["white", "clasic"],
+    "negru": ["dark", "rye", "secară"]
+  },
+  "units": {
+    "kg": ["kilogram", "kilo"],
+    "g": ["gram", "grame"],
+    "l": ["litru", "liter", "litre"],
+    "ml": ["mililitru", "milliliter"],
+    "buc": ["bucată", "bucati", "piece", "pieces", "pcs"]
+  },
+  "sizes": {
+    "patterns": [
+      "\\d+[.,]?\\d*\\s*[gl]",
+      "\\d+[.,]?\\d*\\s*ml",
+      "\\d+[.,]?\\d*\\s*kg", 
+      "\\d+[.,]?\\d*\\s*g",
+      "\\d+\\s*x\\s*\\d+[.,]?\\d*\\s*[glm]",
+      "\\d+\\s*buc"
+    ]
+  }
+}

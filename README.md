@@ -1,8 +1,11 @@
-# Welcome to your Lovable project
+# PriceCompare - Romanian Supermarket Price Comparison
+
+A comprehensive price comparison platform for Romanian supermarkets (Auchan, Carrefour, Kaufland, Mega Image, Freshful).
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/8d13559b-b325-4526-a0fa-8507a3cad2f4
+**Repository**: https://github.com/masina1/shop-shrewd
 
 ## How can I edit this code?
 
@@ -54,11 +57,41 @@ npm run dev
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Frontend**: React + Vite + TypeScript + React Router + Tailwind CSS + shadcn/ui
+- **Data Processing**: Client-side normalization pipeline for vendor feeds
+- **Search**: Diacritics-insensitive search with faceted filtering
+- **I18n**: Romanian/English language support
+- **Development**: ESLint + Prettier + Husky for code quality
+
+## Features
+
+- 🛒 **Multi-store price comparison** across 5 major Romanian retailers
+- 🔍 **Smart search** with diacritics-insensitive matching
+- 📱 **Mobile-responsive** design with touch-friendly interface
+- 🏷️ **Advanced filtering** by category, brand, store, price range, promotions
+- 💰 **Cheapest price detection** with alternative offers
+- 📋 **Wishlists and combos** with local storage persistence
+- 🌐 **Bilingual support** (Romanian/English)
+- ♿ **Accessibility compliant** with ARIA labels and keyboard navigation
+
+## Data Architecture
+
+The application uses a sophisticated normalization pipeline to unify data from different vendors:
+
+- **Canonical product IDs**: EAN/GTIN preferred, fallback to normalized brand+name+size
+- **Category mapping**: Unified two-level taxonomy across all stores
+- **Quality flags**: Detection of missing prices, images, unit mismatches
+- **Synonym handling**: Intelligent matching for fat content, processing methods, sizes
+
+## Development Data
+
+Sample vendor data is available in `public/data/dev/` for:
+
+- Auchan
+- Carrefour
+- Kaufland
+- Mega Image
+- Freshful
 
 ## How can I deploy this project?
 
