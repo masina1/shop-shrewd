@@ -158,8 +158,12 @@ export function SearchPage() {
                           value={searchWithinResults}
                           onChange={(e) => {
                             setSearchWithinResults(e.target.value);
-                            // Reset to page 1 when filter changes
-                            if (e.target.value !== searchWithinResults) {
+                            // Reset to page 1 immediately when filter changes
+                            updateSearchParams({ page: 1 });
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              // Also reset to page 1 on Enter
                               updateSearchParams({ page: 1 });
                             }
                           }}
