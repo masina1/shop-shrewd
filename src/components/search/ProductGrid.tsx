@@ -2,7 +2,7 @@ import { SearchResult, SearchParams } from '@/types/search';
 import { ProductCard } from './ProductCard';
 import { Button } from '@/components/ui/button';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import { normalizeForFilter } from '@/lib/normalization/textUtils';
+import { normalizeForFilter, stripDiacritics } from '@/lib/normalization/textUtils';
 import { useMemo } from 'react';
 
 interface ProductGridProps {
@@ -12,33 +12,160 @@ interface ProductGridProps {
   searchWithinResults?: string; // For filtering within current results
 }
 
+/**
+ * Get category relevance boost for search query (same logic as header search)
+ */
+function getCategoryRelevanceBoost(query: string, categoryPath: string[]): number {
+  const normalizedQuery = stripDiacritics(query.toLowerCase());
+  
+  // Define category mappings for common search terms
+  const categoryMappings: Record<string, string[]> = {
+    // Milk & Dairy queries should prioritize dairy categories
+    'lapte': ['lactate & oua', 'lactate & branzeturi', 'lactate & lapte'],
+    'milk': ['lactate & oua', 'lactate & branzeturi', 'lactate & lapte'],
+    'iaurt': ['lactate & oua', 'lactate & branzeturi', 'lactate & iaurt'],
+    'yogurt': ['lactate & oua', 'lactate & branzeturi', 'lactate & iaurt'],
+    'branza': ['lactate & oua', 'lactate & branzeturi'],
+    'cheese': ['lactate & oua', 'lactate & branzeturi'],
+    'smantana': ['lactate & oua', 'lactate & branzeturi'],
+    'unt': ['lactate & oua', 'lactate & unt'],
+    'butter': ['lactate & oua', 'lactate & unt'],
+    
+    // Meat queries should prioritize meat categories
+    'carne': ['carne & peste', 'carne & mezeluri', 'carne & pasari'],
+    'meat': ['carne & peste', 'carne & mezeluri'],
+    'porc': ['carne & peste', 'carne & porc'],
+    'vita': ['carne & peste', 'carne & vita'],
+    'pasare': ['carne & peste', 'carne & pasari'],
+    
+    // Beverages
+    'apa': ['bauturi'],
+    'water': ['bauturi'],
+    'suc': ['bauturi'],
+    'juice': ['bauturi'],
+    'bere': ['bauturi', 'bauturi alcoolice'],
+    'beer': ['bauturi', 'bauturi alcoolice'],
+    
+    // Fruits & Vegetables
+    'fructe': ['fructe & legume'],
+    'fruits': ['fructe & legume'],
+    'legume': ['fructe & legume'],
+    'vegetables': ['fructe & legume'],
+    'mere': ['fructe & legume'],
+    'apples': ['fructe & legume'],
+    'banane': ['fructe & legume'],
+    'bananas': ['fructe & legume'],
+    
+    // Bakery
+    'paine': ['brutarie & patiserie'],
+    'bread': ['brutarie & patiserie'],
+    
+    // Sweets
+    'ciocolata': ['dulciuri & mic dejun'],
+    'chocolate': ['dulciuri & mic dejun'],
+    'bomboane': ['dulciuri & mic dejun'],
+    'candy': ['dulciuri & mic dejun']
+  };
+  
+  // Check if query matches any category mapping
+  const relevantCategories = categoryMappings[normalizedQuery] || [];
+  
+  for (const category of relevantCategories) {
+    // Check if product is in a relevant category
+    for (const productCategory of categoryPath) {
+      const normalizedProductCategory = stripDiacritics(productCategory.toLowerCase());
+      
+      if (normalizedProductCategory.includes(category)) {
+        return 200; // High boost for category-relevant products
+      }
+    }
+  }
+  
+  return 0; // No category boost
+}
+
 export function ProductGrid({ result, searchParams, onPageChange, searchWithinResults }: ProductGridProps) {
-  // Filter the FULL result set (not just current page)
+  // Filter the FULL result set with SMART RELEVANCE SCORING (same as header search)
   const filteredProducts = useMemo(() => {
     if (!searchWithinResults?.trim()) {
       return result.items;
     }
     
-    // Normalize filter query for diacritics-insensitive search
-    const normalizedQuery = normalizeForFilter(searchWithinResults);
-    const queryTokens = normalizedQuery.split(/\s+/);
+    const query = stripDiacritics(searchWithinResults.toLowerCase());
     
-    return result.items.filter(product => {
-      // Create comprehensive searchable text for each product
-      const searchableFields = [
-        product.name,
-        product.brand || '',
-        product.categoryPath.join(' '),
-        product.badges.join(' ')
-      ];
+    // Apply SAME SCORING LOGIC as header search
+    const scoredItems = result.items.map(item => {
+      let score = 0;
+      let hasMatch = false;
       
-      const productSearchText = normalizeForFilter(searchableFields.join(' '));
+      const itemName = stripDiacritics(item.name.toLowerCase());
+      const itemBrand = item.brand ? stripDiacritics(item.brand.toLowerCase()) : '';
       
-      // All query tokens must match somewhere in the product text
-      return queryTokens.every(token => 
-        token.length > 0 && productSearchText.includes(token)
-      );
+      // **PRIORITY 1: CATEGORY RELEVANCE** (highest boost)
+      const categoryBoost = getCategoryRelevanceBoost(query, item.categoryPath);
+      if (categoryBoost > 0) {
+        score += categoryBoost;
+        hasMatch = true;
+      }
+      
+      // **PRIORITY 2: EXACT MATCHES**
+      if (itemName === query) {
+        score += 100;
+        hasMatch = true;
+      } else if (itemName.startsWith(query)) {
+        score += 80;
+        hasMatch = true;
+      } else if (itemName.includes(` ${query} `) || itemName.includes(` ${query}`)) {
+        score += 60;
+        hasMatch = true;
+      }
+      
+      // Brand exact matches
+      if (itemBrand === query) {
+        score += 70;
+        hasMatch = true;
+      } else if (itemBrand.startsWith(query)) {
+        score += 50;
+        hasMatch = true;
+      }
+      
+      // **PRIORITY 3: PARTIAL MATCHES**
+      if (itemName.includes(query)) {
+        score += 40;
+        hasMatch = true;
+      }
+      
+      if (itemBrand.includes(query)) {
+        score += 30;
+        hasMatch = true;
+      }
+      
+      // Category text matches
+      if (item.categoryPath.some(cat => {
+        const catNormalized = stripDiacritics(cat.toLowerCase());
+        return catNormalized.includes(query);
+      })) {
+        score += 20;
+        hasMatch = true;
+      }
+
+      // Badge matches
+      if (item.badges.some(badge => {
+        const badgeNormalized = stripDiacritics(badge.toLowerCase());
+        return badgeNormalized.includes(query);
+      })) {
+        score += 10;
+        hasMatch = true;
+      }
+      
+      return { item, score, hasMatch };
     });
+    
+    // Filter out non-matches and sort by relevance score (same as header search)
+    return scoredItems
+      .filter(({ hasMatch }) => hasMatch)
+      .sort((a, b) => b.score - a.score) // Sort by score descending
+      .map(({ item }) => item);
   }, [result.items, searchWithinResults]);
   
   // Apply pagination to filtered results
