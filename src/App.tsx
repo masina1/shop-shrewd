@@ -32,6 +32,11 @@ import OfferDetail from "./pages/OfferDetail";
 import AdminReview from "./pages/admin/AdminReview";
 import AdminOfferDetail from "./pages/admin/AdminOfferDetail";
 import MonetizationPage from "./pages/admin/MonetizationPage";
+import DataIngestion from "./pages/admin/DataIngestion";
+import CategoryManagement from "./pages/admin/CategoryManagement";
+import UnmappedQueue from "./pages/admin/UnmappedQueue";
+import ProcessingStatus from "./pages/admin/ProcessingStatus";
+import SearchIndices from "./pages/admin/SearchIndices";
 import { DebugPanel } from "./components/DebugPanel";
 
 const queryClient = new QueryClient();
@@ -48,8 +53,8 @@ const App = () => (
           <Route path="/auth/login" element={<AuthLogin />} />
           <Route path="/auth/register" element={<AuthRegister />} />
           
-          {/* Admin routes with admin layout */}
-          <Route path="/admin/*" element={
+          {/* ORI Core routes with admin layout */}
+          <Route path="/ori-core/*" element={
             <AdminLayout>
               <Routes>
                 <Route path="/" element={<AdminOverview />} />
@@ -63,7 +68,11 @@ const App = () => (
                 <Route path="/monetization" element={<MonetizationPage />} />
                 <Route path="/combos" element={<div className="p-6">Combos Admin - Coming Soon</div>} />
                 <Route path="/templates" element={<div className="p-6">Templates Admin - Coming Soon</div>} />
-                <Route path="/ingestion" element={<div className="p-6">Ingestion Admin - Coming Soon</div>} />
+                <Route path="/ingestion" element={<DataIngestion />} />
+                <Route path="/categories" element={<CategoryManagement />} />
+                <Route path="/unmapped" element={<UnmappedQueue />} />
+                <Route path="/processing" element={<ProcessingStatus />} />
+                <Route path="/search-indices" element={<SearchIndices />} />
                 <Route path="/moderation" element={<div className="p-6">Moderation Admin - Coming Soon</div>} />
                 <Route path="/users" element={<div className="p-6">Users Admin - Coming Soon</div>} />
                 <Route path="/settings" element={<AdminSettings />} />

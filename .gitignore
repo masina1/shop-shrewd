@@ -30,3 +30,18 @@ public/data/*/
 # But keep sample/example data files
 !public/data/README.md
 !public/data/sample/
+
+# Raw scraped data from shops
+data/*/
+!data/README.md
+!data/dev/
+
+# Processed output files
+out/
+public/out/
+*.jsonl
+*.csv
+
+# Preprocessor build artifacts  
+preprocessor/dist/
+preprocessor/node_modules/

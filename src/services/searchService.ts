@@ -1,14 +1,15 @@
 import { SearchParams, SearchResult, SearchResultItem, FacetOption, PriceBucket, StoreId } from '@/types/search';
-import { productRepository } from '@/lib/productRepository';
-import { SearchItem } from '@/types/product';
+import { loadAllProducts } from '@/lib/dataLoader';
 import { stripDiacritics } from '@/lib/normalization/textUtils';
+
 
 export interface ISearchService {
   search(params: SearchParams): Promise<SearchResult>;
 }
 
 /**
- * Enhanced search service using normalized vendor data
+ * Enhanced search service using master product index files
+ * This loads from products.index.jsonl files for optimal performance
  */
 export const searchService: ISearchService = {
   async search(params: SearchParams): Promise<SearchResult> {
@@ -19,8 +20,13 @@ export const searchService: ISearchService = {
     const page = params.page || 1;
 
     try {
-      // Get all search items from repository
-      let searchItems = await productRepository.getAllSearchItems();
+      // Load all products from master index files
+      const allProducts = await loadAllProducts();
+      
+      console.log(`🔍 Search service loaded ${allProducts.length} products from master index files`);
+      
+      // Convert to SearchResultItems format
+      let searchItems = allProducts.map(product => convertToSearchResultItem(product));
       
       // Apply filters
       searchItems = await applyFilters(searchItems, params);
@@ -28,23 +34,20 @@ export const searchService: ISearchService = {
       // Apply sorting
       searchItems = applySorting(searchItems, params);
       
-      // Convert to SearchResultItems format
-      const resultItems = searchItems.map(item => convertToSearchResultItem(item));
-      
       // Generate facets
       const facets = await generateFacets(searchItems, params);
       
       // Apply pagination
       const startIndex = (page - 1) * pageSize;
       const endIndex = startIndex + pageSize;
-      const paginatedItems = resultItems.slice(startIndex, endIndex);
+      const paginatedItems = searchItems.slice(startIndex, endIndex);
 
       return {
         items: paginatedItems,
-        total: resultItems.length,
+        total: searchItems.length,
         page,
         pageSize,
-        hasMore: endIndex < resultItems.length,
+        hasMore: endIndex < searchItems.length,
         facets
       };
     } catch (error) {
@@ -72,33 +75,108 @@ export const searchService: ISearchService = {
 };
 
 /**
+ * Convert normalized preprocessor product to SearchResultItem
+ */
+function convertToSearchResultItem(product: any): SearchResultItem {
+  // Handle normalized preprocessor output format
+  const productName = product.title || 'Unknown Product';
+  const productBrand = product.brand || '';
+  const productPrice = product.pricing?.price || 0;
+  const productImage = product.images?.[0]?.url || '/placeholder.svg';
+  const productCategory = product.category_path?.[0] || 'Other';
+  const productCategory2 = product.category_path?.[1] || '';
+  
+  // Create a simple offer structure for compatibility
+  const offer = {
+    storeId: product.source?.shop || 'unknown',
+    price: productPrice,
+    promoLabel: product.attributes?.promo_flags?.[0] || '',
+    inStock: product.stock?.in_stock !== false
+  };
+  
+  // Extract badges from product attributes
+  const badges: string[] = [];
+  if (product.attributes) {
+    if (product.attributes.dietary && product.attributes.dietary.length > 0) {
+      badges.push(...product.attributes.dietary);
+    }
+    if (product.attributes.allergens && product.attributes.allergens.length > 0) {
+      badges.push(...product.attributes.allergens);
+    }
+    if (product.attributes.promo_flags && product.attributes.promo_flags.length > 0) {
+      badges.push(...product.attributes.promo_flags);
+    }
+  }
+  
+  // Add pack size information if available
+  if (product.pack) {
+    if (product.pack.size && product.pack.unit) {
+      badges.push(`${product.pack.size} ${product.pack.unit}`);
+    }
+  }
+  
+  // Check availability
+  let availability: 'in_stock' | 'limited' | 'out_of_stock' = 'in_stock';
+  if (offer.inStock === false) {
+    availability = 'out_of_stock';
+  }
+
+  return {
+    id: product.canonical_id || `${product.source?.shop || 'unknown'}-${Math.random().toString(36).substr(2, 9)}`,
+    name: productName,
+    brand: productBrand,
+    image: productImage,
+    categoryPath: [productCategory, productCategory2].filter(Boolean),
+    cheapest: { 
+      store: offer.storeId, 
+      price: offer.price,
+      promoPct: offer.promoLabel ? extractPromoPercentage(offer.promoLabel) : undefined
+    },
+    otherStores: [], // No other stores for single-shop data
+    badges,
+    availability
+  };
+}
+
+/**
+ * Extract promo percentage from promo label
+ */
+function extractPromoPercentage(promoLabel: string): number | undefined {
+  const match = promoLabel.match(/(\d+)%/);
+  return match ? parseInt(match[1]) : undefined;
+}
+
+/**
  * Apply search filters to items
  */
-async function applyFilters(items: SearchItem[], params: SearchParams): Promise<SearchItem[]> {
+async function applyFilters(items: SearchResultItem[], params: SearchParams): Promise<SearchResultItem[]> {
   let filtered = [...items];
 
   // Text search
   if (params.q) {
     const query = stripDiacritics(params.q.toLowerCase());
     filtered = filtered.filter(item => {
-      const product = item.product;
-      
       // Search in name
-      if (stripDiacritics(product.name.toLowerCase()).includes(query)) {
+      if (stripDiacritics(item.name.toLowerCase()).includes(query)) {
         return true;
       }
       
       // Search in brand
-      if (product.brand && stripDiacritics(product.brand.toLowerCase()).includes(query)) {
+      if (item.brand && stripDiacritics(item.brand.toLowerCase()).includes(query)) {
         return true;
       }
       
-      // Search in category
-      if (stripDiacritics(product.categoryL1.toLowerCase()).includes(query)) {
+      // Search in category path
+      if (item.categoryPath.some(cat => 
+        stripDiacritics(cat.toLowerCase()).includes(query)
+      )) {
         return true;
       }
-      
-      if (product.categoryL2 && stripDiacritics(product.categoryL2.toLowerCase()).includes(query)) {
+
+      // Search in badges
+      if (item.badges.some(badge => 
+        stripDiacritics(badge.toLowerCase()).includes(query)
+      )) {
         return true;
       }
       
@@ -110,32 +188,30 @@ async function applyFilters(items: SearchItem[], params: SearchParams): Promise<
   if (params.cat) {
     const categoryParts = params.cat.split('/').map(c => c.toLowerCase());
     filtered = filtered.filter(item => {
-      const product = item.product;
-      
       if (categoryParts.length === 1) {
-        return product.categoryL1.toLowerCase() === categoryParts[0];
+        return item.categoryPath[0]?.toLowerCase() === categoryParts[0];
       } else if (categoryParts.length === 2) {
-        return product.categoryL1.toLowerCase() === categoryParts[0] && 
-               product.categoryL2?.toLowerCase() === categoryParts[1];
+        return item.categoryPath[0]?.toLowerCase() === categoryParts[0] && 
+               item.categoryPath[1]?.toLowerCase() === categoryParts[1];
       }
-      
       return false;
     });
   }
 
   // Store filter
   if (params.stores && params.stores.length > 0) {
-    filtered = filtered.filter(item =>
-      item.product.offers.some(offer => params.stores!.includes(offer.storeId))
-    );
+    filtered = filtered.filter(item => {
+      const allStores = [item.cheapest.store, ...item.otherStores.map(o => o.store)];
+      return allStores.some(store => params.stores!.includes(store));
+    });
   }
 
   // Price range filter
   if (params.price_min !== undefined || params.price_max !== undefined) {
     filtered = filtered.filter(item => {
-      const minPrice = item.cheapest.price;
-      if (params.price_min !== undefined && minPrice < params.price_min) return false;
-      if (params.price_max !== undefined && minPrice > params.price_max) return false;
+      const price = item.cheapest.price;
+      if (params.price_min !== undefined && price < params.price_min) return false;
+      if (params.price_max !== undefined && price > params.price_max) return false;
       return true;
     });
   }
@@ -143,21 +219,31 @@ async function applyFilters(items: SearchItem[], params: SearchParams): Promise<
   // Promo filter
   if (params.promo) {
     filtered = filtered.filter(item =>
-      item.product.offers.some(offer => offer.promoLabel)
+      item.cheapest.promoPct !== undefined || 
+      item.otherStores.some(offer => offer.promoPct !== undefined)
     );
   }
 
   // Availability filter
   if (params.availability === 'in_stock') {
-    filtered = filtered.filter(item =>
-      item.product.offers.some(offer => offer.inStock !== false)
-    );
+    filtered = filtered.filter(item => item.availability === 'in_stock');
   }
 
   // Brand filter
   if (params.brand && params.brand.length > 0) {
     filtered = filtered.filter(item =>
-      item.product.brand && params.brand!.includes(item.product.brand)
+      item.brand && params.brand!.includes(item.brand)
+    );
+  }
+
+  // Properties filter (badges)
+  if (params.props && params.props.length > 0) {
+    filtered = filtered.filter(item =>
+      params.props!.some(prop => 
+        item.badges.some(badge => 
+          stripDiacritics(badge.toLowerCase()).includes(stripDiacritics(prop.toLowerCase()))
+        )
+      )
     );
   }
 
@@ -167,7 +253,7 @@ async function applyFilters(items: SearchItem[], params: SearchParams): Promise<
 /**
  * Apply sorting to search results
  */
-function applySorting(items: SearchItem[], params: SearchParams): SearchItem[] {
+function applySorting(items: SearchResultItem[], params: SearchParams): SearchResultItem[] {
   const sortBy = params.sort || 'relevance';
   
   switch (sortBy) {
@@ -179,9 +265,9 @@ function applySorting(items: SearchItem[], params: SearchParams): SearchItem[] {
       
     case 'promo_desc':
       return items.sort((a, b) => {
-        const aHasPromo = a.product.offers.some(offer => offer.promoLabel) ? 1 : 0;
-        const bHasPromo = b.product.offers.some(offer => offer.promoLabel) ? 1 : 0;
-        return bHasPromo - aHasPromo;
+        const aPromo = a.cheapest.promoPct || 0;
+        const bPromo = b.cheapest.promoPct || 0;
+        return bPromo - aPromo;
       });
       
     case 'newest':
@@ -196,117 +282,86 @@ function applySorting(items: SearchItem[], params: SearchParams): SearchItem[] {
 }
 
 /**
- * Convert SearchItem to SearchResultItem format
+ * Generate search facets
  */
-function convertToSearchResultItem(item: SearchItem): SearchResultItem {
-  const product = item.product;
-  
-  // Debug logging for price issues
-  if (product.name.toLowerCase().includes('cappy')) {
-    console.log('🔍 Cappy Product Debug:', {
-      name: product.name,
-      cheapestPrice: item.cheapest.price,
-      promoLabel: item.cheapest.promoLabel,
-      offers: product.offers.map(o => ({ store: o.storeId, price: o.price, promo: o.promoLabel }))
-    });
-  }
-  
-  return {
-    id: product.id,
-    name: product.name,
-    brand: product.brand,
-    image: product.image || '/placeholder.svg',
-    categoryPath: [product.categoryL1, product.categoryL2].filter(Boolean) as string[],
-    cheapest: {
-      store: item.cheapest.storeId,
-      price: item.cheapest.price,
-      promoPct: item.cheapest.promoLabel ? extractPromoPercentage(item.cheapest.promoLabel) : undefined
-    },
-    otherStores: item.alternatives.map(offer => ({
-      store: offer.storeId,
-      price: offer.price,
-      promoPct: offer.promoLabel ? extractPromoPercentage(offer.promoLabel) : undefined
-    })),
-    badges: product.adminFlags || [],
-    availability: item.cheapest.inStock !== false ? 'in_stock' : 'out_of_stock'
-  };
-}
-
-/**
- * Extract percentage from promo label
- */
-function extractPromoPercentage(promoLabel: string): number | undefined {
-  const match = promoLabel.match(/-?(\d+)%/);
-  return match ? parseInt(match[1]) : undefined;
-}
-
-/**
- * Generate facets for filtering
- */
-async function generateFacets(items: SearchItem[], params: SearchParams) {
+async function generateFacets(items: SearchResultItem[], params: SearchParams) {
   // Categories
-  const categoryCounts: Record<string, number> = {};
-  const storeCounts: Record<string, number> = {};
-  const brandCounts: Record<string, number> = {};
-  
+  const categories = new Map<string, number>();
   items.forEach(item => {
-    const product = item.product;
-    
-    // Count categories
-    const l1Key = product.categoryL1.toLowerCase();
-    categoryCounts[l1Key] = (categoryCounts[l1Key] || 0) + 1;
-    
-    if (product.categoryL2) {
-      const l2Key = `${product.categoryL1}/${product.categoryL2}`.toLowerCase();
-      categoryCounts[l2Key] = (categoryCounts[l2Key] || 0) + 1;
-    }
-    
-    // Count stores
-    product.offers.forEach(offer => {
-      storeCounts[offer.storeId] = (storeCounts[offer.storeId] || 0) + 1;
+    item.categoryPath.forEach(cat => {
+      categories.set(cat, (categories.get(cat) || 0) + 1);
     });
-    
-    // Count brands
-    if (product.brand) {
-      brandCounts[product.brand] = (brandCounts[product.brand] || 0) + 1;
+  });
+
+  // Stores
+  const stores: Record<string, number> = {};
+  items.forEach(item => {
+    const allStores = [item.cheapest.store, ...item.otherStores.map(o => o.store)];
+    allStores.forEach(store => {
+      stores[store] = (stores[store] || 0) + 1;
+    });
+  });
+
+  // Brands
+  const brands = new Map<string, number>();
+  items.forEach(item => {
+    if (item.brand) {
+      brands.set(item.brand, (brands.get(item.brand) || 0) + 1);
     }
   });
-  
-  // Convert to facet format
-  const categories: FacetOption[] = Object.entries(categoryCounts).map(([path, count]) => {
-    const parts = path.split('/');
-    const name = parts[parts.length - 1];
-    const parentId = parts.length > 1 ? parts.slice(0, -1).join('/') : undefined;
-    
-    return {
-      id: path,
-      label: name.charAt(0).toUpperCase() + name.slice(1),
-      count,
-      parentId
-    };
+
+  // Properties (badges)
+  const properties = new Map<string, number>();
+  items.forEach(item => {
+    item.badges.forEach(badge => {
+      properties.set(badge, (properties.get(badge) || 0) + 1);
+    });
   });
-  
-  const brands: FacetOption[] = Object.entries(brandCounts)
-    .sort(([,a], [,b]) => b - a) // Sort by count desc
-    .slice(0, 15) // Top 15 brands
-    .map(([brand, count]) => ({
-      id: brand,
-      label: brand,
-      count
-    }));
-  
+
   // Price range
   const prices = items.map(item => item.cheapest.price);
-  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-  const maxPrice = prices.length > 0 ? Math.max(...prices) : 100;
-  
+  const minPrice = Math.min(...prices, 0);
+  const maxPrice = Math.max(...prices, 100);
+
+  // Price buckets
+  const buckets: PriceBucket[] = [];
+  const bucketSize = Math.ceil((maxPrice - minPrice) / 10);
+  for (let i = 0; i < 10; i++) {
+    const from = minPrice + (i * bucketSize);
+    const to = from + bucketSize;
+    const count = items.filter(item => 
+      item.cheapest.price >= from && item.cheapest.price < to
+    ).length;
+    
+    if (count > 0) {
+      buckets.push({
+        from,
+        to,
+        count,
+        label: `${from.toFixed(0)}-${to.toFixed(0)} RON`
+      });
+    }
+  }
+
   return {
-    categories,
-    stores: storeCounts,
-    properties: [],
-    types: [],
-    brands,
-    price: { min: minPrice, max: maxPrice, buckets: [] },
+    categories: Array.from(categories.entries()).map(([name, count]) => ({ 
+      id: name.toLowerCase().replace(/\s+/g, '-'), 
+      label: name, 
+      count 
+    })),
+    stores,
+    properties: Array.from(properties.entries()).map(([name, count]) => ({ 
+      id: name.toLowerCase().replace(/\s+/g, '-'), 
+      label: name, 
+      count 
+    })),
+    types: [], // Domain-specific types would be extracted from attributes
+    brands: Array.from(brands.entries()).map(([name, count]) => ({ 
+      id: name.toLowerCase().replace(/\s+/g, '-'), 
+      label: name, 
+      count 
+    })),
+    price: { min: minPrice, max: maxPrice, buckets },
     activeCounts: {}
   };
 }

@@ -1,0 +1,540 @@
+# Canonical Category Hierarchy
+# Complete structure based on Freshful categories (Slim Version)
+# Updated to match the full category tree
+
+categories:
+  "Brutărie & patiserie":
+    slug: "brutarie-patiserie"
+    subcategories:
+      "Pâine":
+        slug: "paine"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Patiserie":
+        slug: "patiserie"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Carne & pește":
+    slug: "carne-peste"
+    subcategories:
+      "Carne de vită și oaie":
+        slug: "carne-vita-oaie"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Carne de porc":
+        slug: "carne-porc"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Carne de pasăre":
+        slug: "carne-pasare"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Alte cărnuri":
+        slug: "alte-carnuri"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Mici și specialități":
+        slug: "mici-specialitati"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Pește și sushi":
+        slug: "peste-sushi"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Pește afumat":
+        slug: "peste-afumat"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Pește marinat":
+        slug: "peste-marinat"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Icre și salată de icre":
+        slug: "icre-salata-icre"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Specialități de pește":
+        slug: "specialitati-peste"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Fructe & legume":
+    slug: "fructe-legume"
+    subcategories:
+      "Fructe proaspete":
+        slug: "fructe-proaspete"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Legume proaspete":
+        slug: "legume-proaspete"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Verdețuri și ierburi aromatice":
+        slug: "verdeturi-ierburi-aromatice"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Fructe și legume uscate":
+        slug: "fructe-legume-uscate"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Sucuri naturale":
+        slug: "sucuri-naturale"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Lactate & ouă":
+    slug: "lactate-oua"
+    subcategories:
+      "Lapte, smântână și brânză proaspătă":
+        slug: "lapte-smantana-branza-proaspata"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Unt":
+        slug: "unt"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Lactate UHT":
+        slug: "lactate-uht"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Iaurt, desert și sana":
+        slug: "iaurt-desert-sana"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Ouă":
+        slug: "oua"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Brânzeturi":
+        slug: "branzeturi"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Lapte și lactate ECO":
+        slug: "lapte-lactate-eco"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Amestecuri lactate și grăsimi vegetale":
+        slug: "amestecuri-lactate-grasimi-vegetale"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Mezeluri & ready meals":
+    slug: "mezeluri-ready-meals"
+    subcategories:
+      "Mezeluri":
+        slug: "mezeluri"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Mezeluri feliate":
+        slug: "mezeluri-feliate"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Pizza și aluat":
+        slug: "pizza-aluat"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Paste proaspete":
+        slug: "paste-proaspete"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Ready meals":
+        slug: "ready-meals"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Produse vegetale":
+    slug: "produse-vegetale"
+    subcategories:
+      "Carne și specialități vegetale":
+        slug: "carne-specialitati-vegetale"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Băuturi, creme și grăsimi vegetale":
+        slug: "bauturi-creme-grasimi-vegetale"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Înghețată & congelate":
+    slug: "inghetata-congelate"
+    subcategories:
+      "Înghețată și deserturi congelate":
+        slug: "inghetata-deserturi-congelate"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Carne și pește congelate":
+        slug: "carne-peste-congelate"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Legume și fructe congelate":
+        slug: "legume-fructe-congelate"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Semipreparate congelate":
+        slug: "semipreparate-congelate"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Băuturi":
+    slug: "bauturi"
+    subcategories:
+      "Băuturi necarbogazoase și siropuri":
+        slug: "bauturi-necarbogazoase-siropuri"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Apă":
+        slug: "apa"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Băuturi carbogazoase":
+        slug: "bauturi-carbogazoase"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Bere":
+        slug: "bere"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Vinuri":
+        slug: "vinuri"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Băuturi spirtoase":
+        slug: "bauturi-spirtoase"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Tutun":
+        slug: "tutun"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Băcănie":
+    slug: "bacanie"
+    subcategories:
+      "Paste, orez și legume uscate":
+        slug: "paste-orez-legume-uscate"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Conserve":
+        slug: "conserve"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Condimente și sosuri":
+        slug: "condimente-sosuri"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Ulei și oțet":
+        slug: "ulei-otet"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "De ronțăit":
+        slug: "de-rontanit"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Făină, zahăr și produse gourmet":
+        slug: "faina-zahar-produse-gourmet"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Dulciuri & mic dejun":
+    slug: "dulciuri-mic-dejun"
+    subcategories:
+      "Biscuiți, napolitane și prăjituri":
+        slug: "biscuiti-napolitane-prajituri"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Cereale și mic dejun":
+        slug: "cereale-mic-dejun"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Cafea și ceai":
+        slug: "cafea-ceai"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Bomboane și ciocolată":
+        slug: "bomboane-ciocolata"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Dietetic, ECO & internațional":
+    slug: "dietetic-eco-international"
+    subcategories:
+      "Produse ecologice":
+        slug: "produse-ecologice"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Produse dietetice și naturiste":
+        slug: "produse-dietetice-naturiste"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Suplimente alimentare":
+        slug: "suplimente-alimentare"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Produse internaționale":
+        slug: "produse-internationale"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Cosmetice":
+    slug: "cosmetice"
+    subcategories:
+      "Deodorante și parfumuri":
+        slug: "deodorante-parfumuri"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Bărbierit și îngrijire ten":
+        slug: "barbierit-ingrijire-ten"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Demachiante și creme":
+        slug: "demachiante-creme"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Protecție solară":
+        slug: "protectie-solara"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Ceară, benzi și creme depilatoare":
+        slug: "ceara-benzi-creme-depilatoare"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Seturi cadou":
+        slug: "seturi-cadou"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Îngrijirea părului":
+        slug: "ingrijirea-parului"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Igienă intimă":
+        slug: "igiena-intima"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Igienă dentară":
+        slug: "igiena-dentara"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Săpunuri și geluri de duș":
+        slug: "sapunuri-geluri-dus"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Dermatocosmetice și parafarmacie":
+        slug: "dermatocosmetice-parafarmacie"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Repelent":
+        slug: "repelent"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Mama & copilul":
+    slug: "mama-copilul"
+    subcategories:
+      "Alimente bebe":
+        slug: "alimente-bebe"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Igienă bebe":
+        slug: "igiena-bebe"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Puericultură":
+        slug: "puericultura"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Detergenți & igienizare":
+    slug: "detergenti-igienizare"
+    subcategories:
+      "Spălare și întreținere rufe":
+        slug: "spalare-intretinere-rufe"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Curățenie și întreținerea casei":
+        slug: "curatenie-intretinerea-casei"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Hârtie igienică, șervețele și prosoape":
+        slug: "hartie-igienica-servetele-prosoape"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Casă & agrement":
+    slug: "casa-agrement"
+    subcategories:
+      "Bricolaj și auto":
+        slug: "bricolaj-auto"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Grădină":
+        slug: "gradina"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Articole de menaj":
+        slug: "articole-menaj"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Birotică și papetărie":
+        slug: "birotica-papetarie"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Jucării":
+        slug: "jucarii"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Accesorii IT&C":
+        slug: "accesorii-itc"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Textile și accesorii":
+        slug: "textile-accesorii"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Electrocasnice mici":
+        slug: "electrocasnice-mici"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+  "Pet Shop":
+    slug: "pet-shop"
+    subcategories:
+      "Pisici":
+        slug: "pisici"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Câini":
+        slug: "caini"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Păsări și rozătoare":
+        slug: "pasari-rozatoare"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+      "Pești și țestoase":
+        slug: "pesti-testoase"
+        subcategories:
+          - name: "Toate produsele"
+            slug: "toate-produsele"
+
+# Synonyms and mappings
+synonyms:
+  meat: ["carne", "vita", "porc", "pasare", "pui", "miel"]
+  dairy: ["lactate", "lapte", "iaurt", "branza", "unt"]
+  fruits: ["fructe", "mere", "banane", "citrice"]
+  vegetables: ["legume", "cartofi", "ceapa", "rosii"]
+  beverages: ["bauturi", "apa", "suc", "bere", "vin"]
+  sweets: ["dulciuri", "ciocolata", "bomboane", "prajituri"]
+  cosmetics: ["cosmetice", "parfum", "sampon", "crema"]
+  cleaning: ["detergenti", "sapun", "curatenie"]
+
+# Unit mappings
+units:
+  weight:
+    kg: 1.0
+    g: 0.001
+    lb: 0.453592
+    oz: 0.0283495
+  volume:
+    l: 1.0
+    ml: 0.001
+    cl: 0.01
+    dl: 0.1
+  piece:
+    buc: 1.0
+    pcs: 1.0
+    bucata: 1.0
+    bucati: 1.0
+
+# Matching configuration
+matching:
+  exact_match: 1.0
+  regex_match: 0.95
+  synonym_match: 0.9
+  fuzzy_threshold: 0.82
+  minimum_confidence: 0.7

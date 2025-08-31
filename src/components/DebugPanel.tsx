@@ -174,7 +174,7 @@ export function DebugPanel() {
                     <a href="/leaderboard">Leaderboard</a>
                   </Button>
                   <Button variant="ghost" size="sm" asChild className="h-8 justify-start p-2">
-                    <a href="/admin/review">Admin Review</a>
+                    <a href="/ori-core/review">ORI Core Review</a>
                   </Button>
                 </div>
               </div>

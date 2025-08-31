@@ -34,11 +34,11 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
     const path = location.pathname;
     const segments = path.split('/').filter(Boolean);
     
-    if (segments.length === 1 && segments[0] === 'admin') {
-      return [{ label: t('sidebar.overview'), href: '/admin' }];
+    if (segments.length === 1 && segments[0] === 'ori-core') {
+      return [{ label: t('sidebar.overview'), href: '/ori-core' }];
     }
     
-    const breadcrumbs = [{ label: t('sidebar.overview'), href: '/admin' }];
+    const breadcrumbs = [{ label: t('sidebar.overview'), href: '/ori-core' }];
     
     if (segments.length > 1) {
       const section = segments[1];
@@ -56,7 +56,7 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
       
       breadcrumbs.push({
         label: sectionLabels[section] || section,
-        href: `/admin/${section}`
+        href: `/ori-core/${section}`
       });
       
       if (segments.length > 2) {
@@ -82,10 +82,10 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
 
   const handleQuickAdd = (type: string) => {
     const routes: Record<string, string> = {
-      product: '/admin/products/new',
-      store: '/admin/stores/new',
-      offer: '/admin/offers/new',
-      combo: '/admin/combos/new'
+      product: '/ori-core/products/new',
+      store: '/ori-core/stores/new',
+      offer: '/ori-core/offers/new',
+      combo: '/ori-core/combos/new'
     };
     
     if (routes[type]) {
@@ -110,10 +110,10 @@ export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
         {/* App title */}
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold hidden sm:block">
-            Price Comparison Admin
+            ORI Core - Price Comparison
           </h1>
           <h1 className="text-lg font-semibold sm:hidden">
-            Admin
+            ORI Core
           </h1>
         </div>
 

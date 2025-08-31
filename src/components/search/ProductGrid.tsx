@@ -16,7 +16,10 @@ export function ProductGrid({ result, searchParams, onPageChange }: ProductGridP
 
   // Filter products based on search within results
   const filteredProducts = result.items.filter(product =>
-    !searchWithin || product.name.toLowerCase().includes(searchWithin.toLowerCase())
+    !searchWithin || 
+    product.name.toLowerCase().includes(searchWithin.toLowerCase()) ||
+    (product.brand && product.brand.toLowerCase().includes(searchWithin.toLowerCase())) ||
+    product.categoryPath.some(cat => cat.toLowerCase().includes(searchWithin.toLowerCase()))
   );
 
   const currentPage = searchParams.page || 1;
@@ -40,9 +43,9 @@ export function ProductGrid({ result, searchParams, onPageChange }: ProductGridP
         <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
           <Search className="w-8 h-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">No products found</h3>
+        <h3 className="text-lg font-semibold mb-2">Nu s-au găsit produse</h3>
         <p className="text-muted-foreground mb-4">
-          Try adjusting your search terms or filters
+          Încearcă să ajustezi termenii de căutare sau filtrele
         </p>
       </div>
     );
@@ -55,13 +58,40 @@ export function ProductGrid({ result, searchParams, onPageChange }: ProductGridP
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
-            placeholder="Search within results..."
+            placeholder="Caută în rezultate..."
             value={searchWithin}
             onChange={(e) => setSearchWithin(e.target.value)}
             className="pl-9"
           />
+          {searchWithin && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchWithin('')}
+                className="h-6 w-6 p-0 hover:bg-muted"
+              >
+                ×
+              </Button>
+            </div>
+          )}
         </div>
       )}
+
+      {/* Results summary */}
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <span>
+          {searchWithin 
+            ? `${filteredProducts.length} din ${result.total} produse pentru "${searchWithin}"`
+            : `${result.total} produse găsite`
+          }
+        </span>
+        {searchWithin && (
+          <Button variant="outline" size="sm" onClick={() => setSearchWithin('')}>
+            Șterge filtrarea
+          </Button>
+        )}
+      </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -74,10 +104,10 @@ export function ProductGrid({ result, searchParams, onPageChange }: ProductGridP
       {filteredProducts.length === 0 && searchWithin && (
         <div className="text-center py-8">
           <p className="text-muted-foreground">
-            No products match "{searchWithin}" in the current results
+            Nu s-au găsit produse care să corespundă "{searchWithin}" în rezultatele curente
           </p>
           <Button variant="outline" onClick={() => setSearchWithin('')} className="mt-2">
-            Clear search
+            Șterge căutarea
           </Button>
         </div>
       )}
@@ -92,7 +122,7 @@ export function ProductGrid({ result, searchParams, onPageChange }: ProductGridP
             disabled={currentPage <= 1}
           >
             <ChevronLeft className="w-4 h-4 mr-1" />
-            Previous
+            Anterior
           </Button>
 
           <div className="flex items-center gap-2">
@@ -128,7 +158,7 @@ export function ProductGrid({ result, searchParams, onPageChange }: ProductGridP
             onClick={handleNextPage}
             disabled={currentPage >= totalPages}
           >
-            Next
+            Următor
             <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         </div>

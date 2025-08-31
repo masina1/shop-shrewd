@@ -374,19 +374,16 @@ function extractCategoryFromFilename(filename: string): string {
     // Carrefour patterns
     'casa--gradina---petshop': 'Casa & Grădină',
     'bacanie---lichide': 'Băcănie',
-    'bacanie': 'Băcănie',
     'lichide': 'Băuturi',
     
     // Mega patterns
     'apa-si-sucuri': 'Băuturi',
-    'bauturi': 'Băuturi',
     'lactate-si-oua': 'Lactate & Ouă',
     'mezeluri--carne': 'Carne & Mezeluri',
     'fructe-si-legume': 'Fructe & Legume',
     'dulciuri-si-snacks': 'Dulciuri & Snacks',
     'paine--cafea--cereale': 'Brutărie & Cereale',
     'ingrediente-culinare': 'Băcănie',
-    'produse-congelate': 'Produse Congelate',
     'cosmetice-si-ingrijire': 'Cosmetice & Îngrijire',
     'curatenie-si-nealimentare': 'Curățenie',
     'mama-si-ingrijire-copil': 'Copii & Bebeluși',
@@ -475,7 +472,6 @@ function extractCategoryFromFilename(filename: string): string {
     'suplimente-alimentare': 'Suplimente',
     'tutun': 'Tutun',
     'tutun-gama': 'Tutun',
-    'accesorii-itc': 'Electronice & IT',
     'electrocasnice-mici': 'Electrocasnice',
     'birotica-si-papetarie': 'Birotică',
     'textile-si-accesorii': 'Textile',
@@ -561,6 +557,232 @@ export function getAppConfig() {
  */
 export function isDevelopment(): boolean {
   return getAppConfig().appEnv === 'development';
+}
+
+/**
+ * Load all products from master index files for search
+ * This is more efficient than loading category shards separately
+ */
+export async function loadAllProducts(): Promise<any[]> {
+  try {
+    console.log('📂 Loading all products from master index files...');
+
+    const shops = ['auchan', 'carrefour', 'kaufland', 'mega', 'freshful', 'lidl'];
+    let allProducts: any[] = [];
+    let successfulShops = 0;
+    let failedShops = 0;
+
+    for (const shop of shops) {
+      try {
+        // Try public path first (for browser access)
+        let masterIndexPath = `/out/${shop}-final/products.index.jsonl`;
+        
+        console.log(`🔍 Checking ${shop} at: ${masterIndexPath}`);
+        
+        // Check if the shop has been processed
+        let response: Response;
+        try {
+          response = await fetch(masterIndexPath);
+          if (!response.ok) {
+            console.log(`⚠️ Shop ${shop} not accessible at public path: ${response.status} ${response.statusText}`);
+            // Try alternative path as fallback
+            masterIndexPath = `./out/${shop}-final/products.index.jsonl`;
+            console.log(`🔄 Trying fallback path: ${masterIndexPath}`);
+            response = await fetch(masterIndexPath);
+            if (!response.ok) {
+              console.log(`⚠️ Shop ${shop} not accessible at fallback path either: ${response.status} ${response.statusText}`);
+              failedShops++;
+              continue;
+            }
+          }
+        } catch (error) {
+          console.log(`⚠️ Shop ${shop} network error:`, error);
+          failedShops++;
+          continue;
+        }
+
+        // Load master index file
+        if (response.ok) {
+          const text = await response.text();
+          console.log(`📄 Raw text length for ${shop}: ${text.length} characters`);
+          
+          // Check if file is empty or contains HTML
+          if (text.trim().length === 0) {
+            console.log(`⚠️ Shop ${shop} file is empty`);
+            failedShops++;
+            continue;
+          }
+          
+          if (text.includes('<!DOCTYPE html>') || text.includes('<html')) {
+            console.log(`⚠️ Shop ${shop} file contains HTML instead of JSON data`);
+            failedShops++;
+            continue;
+          }
+          
+          const products = text.trim().split('\n')
+            .filter(line => line.trim())
+            .map(line => {
+              try {
+                return JSON.parse(line);
+              } catch (e) {
+                console.warn(`Failed to parse JSON line in ${shop}/products.index.jsonl:`, line);
+                return null;
+              }
+            })
+            .filter(Boolean);
+
+          if (products.length > 0) {
+            // Add shop ID to each product
+            const enrichedProducts = products.map(product => ({
+              ...product,
+              storeId: shop
+            }));
+
+            allProducts.push(...enrichedProducts);
+            successfulShops++;
+            console.log(`✅ Loaded ${products.length} products from ${shop} master index`);
+          } else {
+            console.log(`⚠️ No products parsed from ${shop}`);
+            failedShops++;
+          }
+        }
+      } catch (error) {
+        console.warn(`⚠️ Failed to load ${shop} master index:`, error);
+        failedShops++;
+      }
+    }
+
+    console.log(`📊 Total products loaded: ${allProducts.length} from ${successfulShops} successful shops`);
+    console.log(`📊 Failed shops: ${failedShops} (${shops.filter(s => !allProducts.some(p => p.storeId === s)).join(', ')})`);
+    
+    if (allProducts.length === 0) {
+      console.error('❌ No products found! Check if:');
+      console.error('   1. Preprocessor has generated output files');
+      console.error('   2. Files are copied to public/out/ directory');
+      console.error('   3. Browser can access the files at /out/');
+      console.error('   4. Check browser console for network errors');
+      console.error('   5. Some shops may have empty or corrupted data files');
+    }
+    
+    return allProducts;
+
+  } catch (error) {
+    console.error('Error loading master product index:', error);
+    return [];
+  }
+}
+
+/**
+ * Load products organized by category (for category-specific views)
+ * This is kept for backward compatibility and specific use cases
+ */
+export async function loadCategoryShards(): Promise<Map<string, any[]>> {
+  const categoryShards = new Map<string, any[]>();
+
+  try {
+    console.log('📂 Loading normalized category shards from preprocessor output...');
+
+    const shops = ['auchan', 'carrefour', 'kaufland', 'mega', 'freshful', 'lidl'];
+
+    for (const shop of shops) {
+      try {
+        const shopOutputPath = `./out/${shop}-final`;
+        const byCategoryPath = `${shopOutputPath}/by-category`;
+
+        // Check if the shop has been processed
+        try {
+          const response = await fetch(`${byCategoryPath}/metadata.json`);
+          if (!response.ok) {
+            console.log(`⚠️ Shop ${shop} not processed yet, skipping...`);
+            continue;
+          }
+        } catch (error) {
+          console.log(`⚠️ Shop ${shop} not processed yet, skipping...`);
+          continue;
+        }
+
+        // Load all category files for this shop
+        const categoryFiles = await getCategoryFiles(shop);
+
+        for (const [categorySlug, categoryName] of categoryFiles) {
+          try {
+            const response = await fetch(`${byCategoryPath}/${categorySlug}.jsonl`);
+
+            if (response.ok) {
+              const text = await response.text();
+              const products = text.trim().split('\n')
+                .filter(line => line.trim())
+                .map(line => {
+                  try {
+                    return JSON.parse(line);
+                  } catch (e) {
+                    console.warn(`Failed to parse JSON line in ${shop}/${categorySlug}:`, line);
+                    return null;
+                  }
+                })
+                .filter(Boolean);
+
+              if (products.length > 0) {
+                // Add shop ID to each product
+                const enrichedProducts = products.map(product => ({
+                  ...product,
+                  storeId: shop
+                }));
+
+                if (!categoryShards.has(categoryName)) {
+                  categoryShards.set(categoryName, []);
+                }
+                categoryShards.get(categoryName)!.push(...enrichedProducts);
+
+                console.log(`✅ Loaded ${products.length} products from ${shop}/${categoryName}`);
+              }
+            }
+          } catch (error) {
+            console.warn(`⚠️ Failed to load ${shop}/${categorySlug}:`, error);
+          }
+        }
+
+      } catch (error) {
+        console.warn(`⚠️ Failed to process shop ${shop}:`, error);
+      }
+    }
+
+    console.log(`📊 Total categories with products: ${categoryShards.size}`);
+
+    // Log category counts
+    for (const [category, products] of categoryShards) {
+      console.log(`   ${category}: ${products.length} products`);
+    }
+
+    return categoryShards;
+
+  } catch (error) {
+    console.error('Error loading category shards:', error);
+    return new Map<string, any[]>();
+  }
+}
+
+/**
+ * Get category files for a specific shop
+ */
+async function getCategoryFiles(shop: string): Promise<Map<string, string>> {
+  const categoryMapping = new Map<string, string>([
+    // Map category slugs to readable names
+    ['pet-shop', 'Pet Shop'],
+    ['casa-menaj', 'Casa & Menaj'],
+    ['mama-copilul', 'Mama & Copilul'],
+    ['alimente', 'Alimente'],
+    ['cosmetice-ingrijire', 'Cosmetice & Îngrijire'],
+    ['fructe-legume', 'Fructe & Legume'],
+    ['inghetata-congelate', 'Înghețată & Congelate'],
+    ['detergenti-igienizare', 'Detergenți & Igienizare'],
+    ['brutarie-patiserie', 'Brutărie & Patiserie'],
+    ['bauturi', 'Băuturi'],
+    ['bacanie', 'Băcănie'],
+    ['other', 'Altele']
+  ]);
+  
+  return categoryMapping;
 }
 
 /**

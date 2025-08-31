@@ -2,6 +2,31 @@
 
 A comprehensive price comparison platform for Romanian supermarkets (Auchan, Carrefour, Kaufland, Mega Image, Freshful).
 
+## 🔧 Admin Documentation
+
+### For Administrators and Data Processors
+
+- **[📋 Installation Guide](./docs/INSTALLATION.md)** - Complete setup instructions for the preprocessing system
+- **[👨‍💼 Admin Guide](./docs/ADMIN_GUIDE.md)** - Daily operations, commands, and troubleshooting
+- **[🏗️ Architecture Decision Records](./docs/adr/)** - Technical decisions and system design
+
+### Quick Start for Admins
+
+```powershell
+# Install and setup
+cd shop-shrewd/preprocessor
+pnpm install && pnpm build
+
+# Check system status
+pnpm preprocess status
+
+# Process shop data
+pnpm preprocess freshful --report --verbose
+
+# Access admin panel
+pnpm dev  # Then go to http://localhost:8080/ori-core
+```
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/8d13559b-b325-4526-a0fa-8507a3cad2f4

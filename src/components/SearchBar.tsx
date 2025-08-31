@@ -1,13 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { searchProducts, mockProducts } from "@/lib/mockData";
+import { searchService } from "@/services/searchService";
+import { SearchResultItem } from "@/types/search";
+import { Input } from "@/components/ui/input";
 
 export const SearchBar = () => {
   const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<typeof mockProducts>([]);
+  const [suggestions, setSuggestions] = useState<SearchResultItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
@@ -18,12 +21,25 @@ export const SearchBar = () => {
     }
 
     if (query.trim()) {
-      timeoutRef.current = setTimeout(() => {
-        const results = searchProducts(query).slice(0, 6);
-        setSuggestions(results);
-        setShowSuggestions(true);
-        setSelectedIndex(-1);
-      }, 250);
+      timeoutRef.current = setTimeout(async () => {
+        try {
+          setIsLoading(true);
+          // Use real search service to get suggestions
+          const result = await searchService.search({
+            q: query.trim(),
+            pageSize: 6, // Limit suggestions to 6 items
+            page: 1
+          });
+          setSuggestions(result.items);
+          setShowSuggestions(true);
+          setSelectedIndex(-1);
+        } catch (error) {
+          console.error('Search suggestions error:', error);
+          setSuggestions([]);
+        } finally {
+          setIsLoading(false);
+        }
+      }, 300); // Increased debounce for real data
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -87,27 +103,38 @@ export const SearchBar = () => {
   return (
     <div className="relative w-full max-w-lg">
       <form onSubmit={handleSubmit} className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <input
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Input
           ref={inputRef}
-          type="search"
-          placeholder="Search products..."
+          type="text"
+          placeholder="Caută produse, branduri, categorii..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => query.trim() && setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-          aria-expanded={showSuggestions}
-          aria-haspopup="listbox"
-          role="combobox"
+          onFocus={() => {
+            if (suggestions.length > 0) {
+              setShowSuggestions(true);
+            }
+          }}
+          onBlur={() => {
+            // Delay hiding to allow clicks on suggestions
+            setTimeout(() => setShowSuggestions(false), 150);
+          }}
+          className="pl-10 pr-4 py-2 w-full"
         />
+        
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="absolute right-3 top-3">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+          </div>
+        )}
       </form>
 
       {/* Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
         <div 
-          className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-lg shadow-medium z-50"
+          className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-lg shadow-medium z-50 max-h-96 overflow-y-auto"
           role="listbox"
         >
           {suggestions.map((product, index) => (
@@ -120,30 +147,48 @@ export const SearchBar = () => {
               role="option"
               aria-selected={index === selectedIndex}
             >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-10 h-10 rounded object-cover flex-shrink-0"
-                onError={(e) => {
-                  e.currentTarget.src = "/placeholder.svg";
-                }}
-              />
+              <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0 bg-muted flex items-center justify-center">
+                {product.image && product.image !== '/placeholder.svg' ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                ) : null}
+                <div className={`w-6 h-6 text-muted-foreground ${product.image && product.image !== '/placeholder.svg' ? 'hidden' : ''}`}>
+                  <Search className="w-full h-full" />
+                </div>
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-sm truncate">{product.name}</div>
                 <div className="text-success font-semibold text-sm">
-                  from {product.lowestPrice.toFixed(2)} RON
+                  de la {product.cheapest.price.toFixed(2)} RON
                 </div>
+                {product.brand && (
+                  <div className="text-xs text-muted-foreground truncate">
+                    {product.brand}
+                  </div>
+                )}
               </div>
+              {product.cheapest.promoPct && (
+                <div className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
+                  -{product.cheapest.promoPct}%
+                </div>
+              )}
             </button>
           ))}
         </div>
       )}
 
       {/* Empty State */}
-      {showSuggestions && suggestions.length === 0 && query.trim() && (
+      {showSuggestions && suggestions.length === 0 && query.trim() && !isLoading && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-lg shadow-medium z-50 p-4">
           <p className="text-muted-foreground text-sm text-center">
-            No products found for "{query}"
+            Nu s-au găsit produse pentru "{query}"
           </p>
         </div>
       )}

@@ -54,18 +54,18 @@ export default function AdminOverview() {
   ];
 
   const ctaActions = [
-    { title: "Add Product", icon: Plus, action: () => window.location.href = '/admin/products/new' },
-    { title: "Add Offer", icon: Plus, action: () => window.location.href = '/admin/offers/new' },
+    { title: "Add Product", icon: Plus, action: () => window.location.href = '/ori-core/products/new' },
+    { title: "Add Offer", icon: Plus, action: () => window.location.href = '/ori-core/offers/new' },
     { title: "Run Dedupe", icon: Merge, action: () => console.log('Running deduplication...') },
-    { title: "Start Import", icon: Upload, action: () => window.location.href = '/admin/ingestion' }
+    { title: "Start Import", icon: Upload, action: () => window.location.href = '/ori-core/ingestion' }
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Admin Overview</h1>
+        <h1 className="text-3xl font-bold">ORI Core Overview</h1>
         <p className="text-muted-foreground">
-          Monitor your supermarket price comparison platform
+          Monitor your advanced preprocessing system and price comparison platform
         </p>
       </div>
 

@@ -1,0 +1,199 @@
+# Freshful filename-to-canonical category mappings
+# Maps extracted Romanian category names from filenames to canonical categories
+
+mappings:
+  # Electronics & Technology
+  "accesorii itc":
+    canonical: ["Casa & Menaj", "Electronice"]
+    confidence: 0.95
+
+  # Baby & Children
+  "alimente bebe":
+    canonical: ["Mama & copilul", "Alimente bebe"]
+    confidence: 0.95
+
+  # Meat & Fish
+  "alte carnuri":
+    canonical: ["Carne & pește", "Alte cărnuri"]
+    confidence: 0.95
+
+  "carne de pasare":
+    canonical: ["Carne & pește", "Carne de pasăre"]
+    confidence: 0.95
+
+  "carne de porc":
+    canonical: ["Carne & pește", "Carne de porc"]
+    confidence: 0.95
+
+  "carne de vita si oaie":
+    canonical: ["Carne & pește", "Carne de vită și oaie"]
+    confidence: 0.95
+
+  "mici si specialitati":
+    canonical: ["Carne & pește", "Mici și specialități"]
+    confidence: 0.95
+
+  "peste afumat":
+    canonical: ["Carne & pește", "Pește afumat"]
+    confidence: 0.95
+
+  "peste si sushi":
+    canonical: ["Carne & pește", "Pește și sushi"]
+    confidence: 0.95
+
+  "specialitati de peste":
+    canonical: ["Carne & pește", "Specialități de pește"]
+    confidence: 0.95
+
+  # Dairy & Eggs
+  "amestecuri lactate si grasimi vegetale":
+    canonical: ["Lactate & ouă", "Amestecuri lactate și grăsimi vegetale"]
+    confidence: 0.95
+
+  "branzeturi":
+    canonical: ["Lactate & ouă", "Brânzeturi"]
+    confidence: 0.95
+
+  "iaurt desert si sana":
+    canonical: ["Lactate & ouă", "Iaurt, desert și smântână"]
+    confidence: 0.95
+
+  "lactate uht":
+    canonical: ["Lactate & ouă", "Lactate UHT"]
+    confidence: 0.95
+
+  "lapte si lactate eco":
+    canonical: ["Lactate & ouă", "Lapte și lactate ECO"]
+    confidence: 0.95
+
+  "lapte smantana si branza proaspata":
+    canonical: ["Lactate & ouă", "Lapte, smântână și brânză proaspătă"]
+    confidence: 0.95
+
+  "ou":
+    canonical: ["Lactate & ouă", "Ouă"]
+    confidence: 0.95
+
+  "unt":
+    canonical: ["Lactate & ouă", "Unt"]
+    confidence: 0.95
+
+  # Drinks
+  "apa":
+    canonical: ["Băuturi", "Apă"]
+    confidence: 0.95
+
+  "bauturi carbogazoase":
+    canonical: ["Băuturi", "Băuturi carbogazoase"]
+    confidence: 0.95
+
+  "bauturi necarbogazoase si siropuri":
+    canonical: ["Băuturi", "Băuturi necarbogazoase și siropuri"]
+    confidence: 0.95
+
+  "bauturi spirtoase":
+    canonical: ["Băuturi", "Băuturi spirtoase"]
+    confidence: 0.95
+
+  "bere":
+    canonical: ["Băuturi", "Bere"]
+    confidence: 0.95
+
+  "cafea si ceai":
+    canonical: ["Băuturi", "Cafea și ceai"]
+    confidence: 0.95
+
+  "sucuri naturale":
+    canonical: ["Fructe & legume", "Sucuri naturale"]
+    confidence: 0.95
+
+  "vinuri":
+    canonical: ["Băuturi", "Vinuri"]
+    confidence: 0.95
+
+  # Fruits & Vegetables
+  "fructe proaspete":
+    canonical: ["Fructe & legume", "Fructe proaspete"]
+    confidence: 0.95
+
+  "fructe si legume uscate":
+    canonical: ["Fructe & legume", "Fructe și legume uscate"]
+    confidence: 0.95
+
+  "legume proaspete":
+    canonical: ["Fructe & legume", "Legume proaspete"]
+    confidence: 0.95
+
+  "verdeturi si ierburi aromatice":
+    canonical: ["Fructe & legume", "Verdețuri și ierburi aromatice"]
+    confidence: 0.95
+
+  # Bakery & Pastry
+  "paine":
+    canonical: ["Brutărie & patiserie", "Pâine"]
+    confidence: 0.95
+
+  "patiserie":
+    canonical: ["Brutărie & patiserie", "Patiserie"]
+    confidence: 0.95
+
+  # Household & Cleaning
+  "articole de menaj":
+    canonical: ["Casa & Menaj"]
+    confidence: 0.95
+
+  "curatenie si intretinerea casei":
+    canonical: ["Casa & Menaj", "Curățenie"]
+    confidence: 0.95
+
+  "hartie igienica servetele si prosoape":
+    canonical: ["Casa & Menaj", "Hârtie igienică și prosoape"]
+    confidence: 0.95
+
+  "spalare si intretinere rufe":
+    canonical: ["Casa & Menaj", "Spălare rufe"]
+    confidence: 0.95
+
+  # Cosmetics & Personal Care
+  "barbierit si ingrijire ten":
+    canonical: ["Cosmetice & Îngrijire", "Bărbierit și îngrijire ten"]
+    confidence: 0.95
+
+  "ceara benzi si creme depilatoare":
+    canonical: ["Cosmetice & Îngrijire", "Epilare"]
+    confidence: 0.95
+
+  "demachiante si creme":
+    canonical: ["Cosmetice & Îngrijire", "Demachiante și creme"]
+    confidence: 0.95
+
+  "deodorante si parfumuri":
+    canonical: ["Cosmetice & Îngrijire", "Deodorante și parfumuri"]
+    confidence: 0.95
+
+  "igiena dentara":
+    canonical: ["Cosmetice & Îngrijire", "Igienă dentară"]
+    confidence: 0.95
+
+  "igiena intima":
+    canonical: ["Cosmetice & Îngrijire", "Igienă intimă"]
+    confidence: 0.95
+
+  "ingrijirea parului":
+    canonical: ["Cosmetice & Îngrijire", "Îngrijirea părului"]
+    confidence: 0.95
+
+  "sapunuri si geluri de dus":
+    canonical: ["Cosmetice & Îngrijire", "Săpunuri și geluri de duș"]
+    confidence: 0.95
+
+# Special patterns and synonyms
+synonyms:
+  - source: ["accesorii", "electronice", "itc", "tech"]
+    target: ["Casa & Menaj", "Electronice"]
+  - source: ["bebe", "copii", "sugar"]
+    target: ["Mama & copilul"]
+  - source: ["carne", "meat", "vlees"]
+    target: ["Carne & pește"]
+  - source: ["lapte", "lactate", "dairy"]
+    target: ["Lactate & ouă"]

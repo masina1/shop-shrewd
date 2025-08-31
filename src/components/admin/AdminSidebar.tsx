@@ -12,7 +12,11 @@ import {
   Settings,
   DollarSign,
   Menu,
-  X
+  X,
+  FolderTree,
+  AlertTriangle,
+  Activity,
+  Search
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,18 +24,31 @@ import { cn } from "@/lib/utils";
 import { useAdminTranslation } from "@/hooks/useTranslation";
 
 const sidebarItems = [
-  { titleKey: "sidebar.overview", url: "/admin", icon: BarChart3 },
-  { titleKey: "sidebar.products", url: "/admin/products", icon: Package },
-  { titleKey: "sidebar.stores", url: "/admin/stores", icon: Store },
-  { titleKey: "sidebar.offers", url: "/admin/offers", icon: Tag },
-  { titleKey: "sidebar.review", url: "/admin/review", icon: Shield },
-  { titleKey: "combos", url: "/admin/combos", icon: Layers },
-  { titleKey: "templates", url: "/admin/templates", icon: FileText },
-  { titleKey: "ingestion", url: "/admin/ingestion", icon: Download },
-  { titleKey: "moderation", url: "/admin/moderation", icon: Shield },
-  { titleKey: "users", url: "/admin/users", icon: Users },
-  { titleKey: "monetization", url: "/admin/monetization", icon: DollarSign },
-  { titleKey: "sidebar.settings", url: "/admin/settings", icon: Settings },
+  // Core Overview
+  { titleKey: "sidebar.overview", url: "/ori-core", icon: BarChart3 },
+  
+  // Data Processing Group
+  { titleKey: "ingestion", url: "/ori-core/ingestion", icon: Download },
+  { titleKey: "categories", url: "/ori-core/categories", icon: FolderTree },
+  { titleKey: "unmapped", url: "/ori-core/unmapped", icon: AlertTriangle },
+  { titleKey: "processing", url: "/ori-core/processing", icon: Activity },
+  { titleKey: "search-indices", url: "/ori-core/search-indices", icon: Search },
+  
+  // Content Management Group
+  { titleKey: "sidebar.products", url: "/ori-core/products", icon: Package },
+  { titleKey: "sidebar.stores", url: "/ori-core/stores", icon: Store },
+  { titleKey: "sidebar.offers", url: "/ori-core/offers", icon: Tag },
+  { titleKey: "combos", url: "/ori-core/combos", icon: Layers },
+  { titleKey: "templates", url: "/ori-core/templates", icon: FileText },
+  
+  // Quality & Review Group
+  { titleKey: "sidebar.review", url: "/ori-core/review", icon: Shield },
+  { titleKey: "moderation", url: "/ori-core/moderation", icon: Shield },
+  
+  // Administration Group
+  { titleKey: "users", url: "/ori-core/users", icon: Users },
+  { titleKey: "monetization", url: "/ori-core/monetization", icon: DollarSign },
+  { titleKey: "sidebar.settings", url: "/ori-core/settings", icon: Settings },
 ];
 
 interface AdminSidebarProps {
@@ -45,8 +62,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const { t } = useAdminTranslation();
 
   const isActive = (path: string) => {
-    if (path === "/admin") {
-      return currentPath === "/admin";
+    if (path === "/ori-core") {
+      return currentPath === "/ori-core";
     }
     return currentPath.startsWith(path);
   };
@@ -78,7 +95,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           {/* Header */}
           <div className="flex h-16 items-center justify-between px-6 border-b border-sidebar-border">
             <h2 className="text-lg font-semibold text-sidebar-foreground">
-              {t('sidebar.admin_panel')}
+              ORI Core Panel
             </h2>
             <Button
               variant="ghost"
@@ -94,10 +111,17 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           {/* Navigation */}
           <nav className="flex-1 px-4 py-4">
             <ul className="space-y-2" role="list">
-              {sidebarItems.map((item) => {
+              {sidebarItems.map((item, index) => {
                 const active = isActive(item.url);
+                const showSeparator = index === 1 || index === 5 || index === 10 || index === 12;
+                
                 return (
                   <li key={item.titleKey}>
+                    {showSeparator && (
+                      <div className="my-4">
+                        <div className="h-px bg-sidebar-border" />
+                      </div>
+                    )}
                     <NavLink
                       to={item.url}
                       onClick={onClose}
