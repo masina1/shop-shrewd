@@ -167,7 +167,13 @@ export function SearchPage() {
                         <Input
                           placeholder="Filtrează în rezultate..."
                           value={searchWithinResults}
-                          onChange={(e) => setSearchWithinResults(e.target.value)}
+                          onChange={(e) => {
+                            setSearchWithinResults(e.target.value);
+                            // Reset to page 1 when filter changes
+                            if (searchParams.page !== 1) {
+                              updateSearchParams({ page: 1 });
+                            }
+                          }}
                           className="pl-10 w-64"
                           size="sm"
                         />
