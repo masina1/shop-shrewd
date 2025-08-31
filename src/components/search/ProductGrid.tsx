@@ -7,7 +7,7 @@ import { stripDiacritics } from '@/lib/normalization/textUtils';
 
 interface ProductGridProps {
   result: SearchResult;
-  allResults?: SearchResult | null; // Complete search results for intelligent filtering
+  allResults?: SearchResultItem[]; // ALL unpaginated search results for intelligent filtering
   searchParams: SearchParams;
   onPageChange: (page: number) => void;
   searchWithinResults?: string; // For filtering within current results
@@ -16,12 +16,12 @@ interface ProductGridProps {
 export function ProductGrid({ result, allResults, searchParams, onPageChange, searchWithinResults }: ProductGridProps) {
   // Apply intelligent filtering to ALL search results, then paginate
   const { filteredProducts, totalFiltered } = useMemo(() => {
-    if (!searchWithinResults || !allResults) {
+    if (!searchWithinResults || !allResults || allResults.length === 0) {
       return { filteredProducts: result.items, totalFiltered: result.total };
     }
 
     // Apply the same intelligent ranking to filter results
-    const filtered = applyIntelligentFilter(allResults.items, searchWithinResults);
+    const filtered = applyIntelligentFilter(allResults, searchWithinResults);
     
     // Apply pagination to filtered results
     const pageSize = searchParams.pageSize || 24;
@@ -34,7 +34,7 @@ export function ProductGrid({ result, allResults, searchParams, onPageChange, se
       filteredProducts: paginatedFiltered, 
       totalFiltered: filtered.length 
     };
-  }, [result.items, allResults, searchWithinResults, searchParams.page, searchParams.pageSize]);
+  }, [allResults, searchWithinResults, searchParams.page, searchParams.pageSize]);
 
   const currentPage = searchParams.page || 1;
   const actualTotal = searchWithinResults ? totalFiltered : result.total;

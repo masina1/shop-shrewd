@@ -18,7 +18,7 @@ export function SearchPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchWithinResults, setSearchWithinResults] = useState('');
-  const [allSearchResults, setAllSearchResults] = useState<SearchResult | null>(null);
+  const [allUnpaginatedResults, setAllUnpaginatedResults] = useState<SearchResultItem[]>([]);
 
 
   // Convert URL params to search params
@@ -42,8 +42,13 @@ export function SearchPage() {
       setError(null);
       
       try {
-        const result = await searchService.search(searchParams);
+        const [result, allItems] = await Promise.all([
+          searchService.search(searchParams),
+          searchService.searchAll(searchParams) // Get ALL unpaginated results for filtering
+        ]);
         setSearchResult(result);
+        setAllUnpaginatedResults(allItems); // Store complete unpaginated results
+        setSearchWithinResults(''); // Clear filter when main search changes
       } catch (err) {
         setError('Failed to load results. Please try again.');
         console.error('Search error:', err);
@@ -61,9 +66,12 @@ export function SearchPage() {
       setError(null);
       
       try {
-        const result = await searchService.search(searchParams);
+        const [result, allItems] = await Promise.all([
+          searchService.search(searchParams),
+          searchService.searchAll(searchParams) // Get ALL unpaginated results for filtering
+        ]);
         setSearchResult(result);
-        setAllSearchResults(result); // Store complete results for filtering
+        setAllUnpaginatedResults(allItems); // Store complete unpaginated results
         setSearchWithinResults(''); // Clear filter on retry
       } catch (err) {
         setError('Failed to load results. Please try again.');
@@ -223,7 +231,7 @@ export function SearchPage() {
             {searchResult ? (
               <ProductGrid
                 result={searchResult}
-                allResults={allSearchResults}
+                allResults={allUnpaginatedResults}
                 searchParams={searchParams}
                 onPageChange={(page) => updateSearchParams({ page })}
                 searchWithinResults={searchWithinResults}

@@ -5,6 +5,7 @@ import { stripDiacritics } from '@/lib/normalization/textUtils';
 
 export interface ISearchService {
   search(params: SearchParams): Promise<SearchResult>;
+  searchAll(params: SearchParams): Promise<SearchResultItem[]>; // For filtering - returns ALL results unpaginated
 }
 
 /**
@@ -70,6 +71,28 @@ export const searchService: ISearchService = {
           activeCounts: {}
         }
       };
+    }
+  },
+
+  async searchAll(params: SearchParams): Promise<SearchResultItem[]> {
+    try {
+      // Load all products from master index files
+      const allProducts = await loadAllProducts();
+      
+      // Convert to SearchResultItems format
+      let searchItems = allProducts.map(product => convertToSearchResultItem(product));
+      
+      // Apply filters (same as main search but no pagination)
+      searchItems = await applyFilters(searchItems, params);
+      
+      // Apply sorting
+      searchItems = applySorting(searchItems, params);
+      
+      // Return ALL results (no pagination)
+      return searchItems;
+    } catch (error) {
+      console.error('SearchAll service error:', error);
+      return [];
     }
   }
 };
