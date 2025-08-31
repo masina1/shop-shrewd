@@ -129,3 +129,23 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Changelog
+
+- **[2025-01-29] Phase 1 Complete - Admin Panel & Search System Implementation**
+  - **Added**: Complete `/ori-core` admin panel with 14 functional pages (AdminOverview, CategoryManagement, UnmappedQueue, ProcessingStatus, SearchIndices, DataIngestion, AdminStores, AdminProducts, AdminOffers, AdminSettings, MonetizationPage, AdminReview + more)
+  - **Added**: Search index generation system with FlexSearch integration (`SearchIndexGenerator` class)
+  - **Added**: CLI command `generate-search-indices` for bulk index creation
+  - **Added**: Comprehensive preprocessing pipeline with category mapping engine
+  - **Added**: Shop-specific normalizers (Freshful + Universal fallback for Auchan, Carrefour, Kaufland, Mega, Lidl)
+  - **Added**: JSONL sharding system with category-based output structure
+  - **Added**: AdminLayout with responsive sidebar navigation and routing
+  - **Added**: Real-time search testing functionality in admin panel
+  - **Added**: Processing status dashboard with job monitoring
+  - **Added**: Category management interface with mapping tools
+  - **Added**: Unmapped products queue for manual review
+  - **Added**: Data ingestion interface for file uploads
+  - **Added**: Comprehensive documentation (INSTALLATION.md, ADMIN_GUIDE.md, NEXT_STEPS.md, ADMIN_DATA_INTEGRATION.md)
+  - **Fixed**: Updated `.gitignore` to exclude processed data files and build artifacts
+  - **Changed**: Preprocessing system now generates real output data for all 5 Romanian supermarket chains
+  - **Status**: Phase 1 (95% complete) - Core system operational, moving to Phase 2 real data integration
