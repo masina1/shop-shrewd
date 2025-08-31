@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AlertCircle, Search } from 'lucide-react';
 import { SearchParams, SearchResult } from '@/types/search';
@@ -18,8 +18,10 @@ export function SearchPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchWithinResults, setSearchWithinResults] = useState('');
-  const [filteredResult, setFilteredResult] = useState<SearchResult | null>(null);
-  const [isFiltering, setIsFiltering] = useState(false);
+  
+  // Store the complete global results for in-memory filtering
+  const globalResultsRef = useRef<SearchResult | null>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout>();
 
 
   // Convert URL params to search params
@@ -36,17 +38,21 @@ export function SearchPage() {
     setUrlSearchParams(urlString);
   };
 
-  // Fetch results when params change
+  // Fetch results when main search params change (not when filtering within results)
   useEffect(() => {
     const fetchResults = async () => {
       setIsLoading(true);
       setError(null);
-      setFilteredResult(null); // Clear filtered results when main search changes
-      setSearchWithinResults(''); // Clear filter input
+      setSearchWithinResults(''); // Clear filter when new search
       
       try {
         const result = await searchService.search(searchParams);
+        
+        // Store complete results for in-memory filtering
+        globalResultsRef.current = result;
         setSearchResult(result);
+        
+        console.log(`🔍 Global search completed: ${result.total} products loaded for in-memory filtering`);
       } catch (err) {
         setError('Failed to load results. Please try again.');
         console.error('Search error:', err);
@@ -57,30 +63,80 @@ export function SearchPage() {
 
     fetchResults();
   }, [searchParams]);
-
-  // Handle results filtering with debouncing
+  
+  // Handle in-memory filtering with debounce (no network calls)
   useEffect(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    
+    debounceTimeoutRef.current = setTimeout(() => {
+      applyInMemoryFilter();
+    }, 250); // 250ms debounce to prevent re-render spam
+    
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [searchWithinResults]);
+
+  // Pure in-memory filter function (no network calls)
+  const applyInMemoryFilter = () => {
+    if (!globalResultsRef.current) {
+      return; // No global results to filter
+    }
+    
+    const globalResults = globalResultsRef.current;
+    
     if (!searchWithinResults.trim()) {
-      setFilteredResult(null);
-      setIsFiltering(false);
+      // No filter - show original global results
+      setSearchResult(globalResults);
+      console.log(`🔄 Filter cleared: showing all ${globalResults.total} global results`);
       return;
     }
-
-    setIsFiltering(true);
-    const timeoutId = setTimeout(async () => {
-      try {
-        const result = await searchService.searchWithFilter(searchParams, searchWithinResults);
-        setFilteredResult(result);
-      } catch (err) {
-        console.error('Filter error:', err);
-        setFilteredResult(null);
-      } finally {
-        setIsFiltering(false);
-      }
-    }, 250); // 250ms debounce
-
-    return () => clearTimeout(timeoutId);
-  }, [searchWithinResults, searchParams]);
+    
+    console.log(`🔍 Filtering ${globalResults.total} global results for: "${searchWithinResults}"`);
+    
+    // Convert filter query to lowercase tokens
+    const filterTokens = searchWithinResults.toLowerCase().trim().split(/\s+/).filter(token => token.length > 0);
+    
+    if (filterTokens.length === 0) {
+      setSearchResult(globalResults);
+      return;
+    }
+    
+    // Filter items in memory (preserve original ranking order)
+    const filteredItems = globalResults.items.filter(item => {
+      // Build searchable text: name + brand + size + category  
+      const searchableText = [
+        item.name,
+        item.brand || '',
+        ...item.badges.filter(badge => /\d+\s*(ml|l|g|kg|buc|bucati|bucăți)/.test(badge.toLowerCase())), // Size badges
+        ...item.categoryPath
+      ].join(' ').toLowerCase();
+      
+      // ALL tokens must appear in product text (AND logic)
+      return filterTokens.every(token => searchableText.includes(token));
+    });
+    
+    // Create filtered result maintaining pagination structure
+    const pageSize = searchParams.pageSize || 24;
+    const filteredResult: SearchResult = {
+      items: filteredItems.slice(0, pageSize), // First page of filtered results
+      total: filteredItems.length,
+      page: 1, // Reset to page 1 when filtering
+      pageSize,
+      hasMore: filteredItems.length > pageSize,
+      facets: globalResults.facets // Keep original facets
+    };
+    
+    setSearchResult(filteredResult);
+    console.log(`✅ In-memory filter: ${filteredItems.length} matches found (showing first ${Math.min(pageSize, filteredItems.length)})`);
+    
+    // Store all filtered items for pagination
+    (filteredResult as any)._allFilteredItems = filteredItems;
+  };
 
   const handleRetry = () => {
     const fetchResults = async () => {
@@ -101,6 +157,50 @@ export function SearchPage() {
   };
 
 
+
+  // Handle pagination for filtered results (in-memory)
+  const handleFilteredPageChange = (page: number) => {
+    if (!searchWithinResults.trim()) {
+      // No active filter - use normal pagination
+      updateSearchParams({ page });
+      return;
+    }
+    
+    if (!globalResultsRef.current) return;
+    
+    // Apply filter and get specific page (in-memory)
+    const filterTokens = searchWithinResults.toLowerCase().trim().split(/\s+/).filter(token => token.length > 0);
+    const allGlobalItems = globalResultsRef.current.items;
+    
+    const filteredItems = allGlobalItems.filter(item => {
+      const searchableText = [
+        item.name,
+        item.brand || '',
+        ...item.badges.filter(badge => /\d+\s*(ml|l|g|kg|buc|bucati|bucăți)/.test(badge.toLowerCase())),
+        ...item.categoryPath
+      ].join(' ').toLowerCase();
+      
+      return filterTokens.every(token => searchableText.includes(token));
+    });
+    
+    // Paginate filtered results
+    const pageSize = searchParams.pageSize || 24;
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedItems = filteredItems.slice(startIndex, endIndex);
+    
+    const filteredResult: SearchResult = {
+      items: paginatedItems,
+      total: filteredItems.length,
+      page,
+      pageSize,
+      hasMore: endIndex < filteredItems.length,
+      facets: globalResultsRef.current.facets
+    };
+    
+    setSearchResult(filteredResult);
+    console.log(`📄 In-memory pagination: Page ${page} of filtered results (${filteredItems.length} total)`);
+  };
 
   const handleSortChange = (sort: string) => {
     updateSearchParams({ sort: sort as SearchParams['sort'] });
@@ -176,38 +276,38 @@ export function SearchPage() {
                     )}
                   </div>
                   
-                                        {/* Search within results - positioned next to pagination */}
-                      {searchResult && searchResult.total > 10 && (
-                        <div className="flex items-center gap-2">
-                          <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input
-                              placeholder="Filtrează în rezultate globale..."
-                              value={searchWithinResults}
-                              onChange={(e) => setSearchWithinResults(e.target.value)}
-                              className="pl-10 w-64"
-                              size="sm"
-                              disabled={isFiltering}
-                            />
-                            {isFiltering && (
-                              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                              </div>
-                            )}
-                          </div>
-                          {searchWithinResults && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setSearchWithinResults('')}
-                              className="h-8 w-8 p-0"
-                              disabled={isFiltering}
-                            >
-                              ×
-                            </Button>
-                          )}
-                        </div>
+                  {/* Search within results - positioned next to pagination */}
+                  {searchResult && searchResult.total > 10 && (
+                    <div className="flex items-center gap-2">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Filtrează în rezultate..."
+                          value={searchWithinResults}
+                          onChange={(e) => setSearchWithinResults(e.target.value)}
+                          className="pl-10 w-64"
+                          size="sm"
+                        />
+                      </div>
+                      {searchWithinResults && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSearchWithinResults('');
+                            // Instantly restore full global results
+                            if (globalResultsRef.current) {
+                              setSearchResult(globalResultsRef.current);
+                              console.log('🔄 Filter cleared: restored full global results');
+                            }
+                          }}
+                          className="h-8 w-8 p-0"
+                        >
+                          ×
+                        </Button>
                       )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Sort and page size controls */}
@@ -252,26 +352,12 @@ export function SearchPage() {
             </div>
 
             {/* Product grid */}
-            {(filteredResult || searchResult) ? (
+            {searchResult ? (
               <ProductGrid
-                result={filteredResult || searchResult!}
+                result={searchResult}
                 searchParams={searchParams}
-                onPageChange={(page) => {
-                  if (filteredResult) {
-                    // When filtering, handle pagination within filtered results
-                    const startIndex = (page - 1) * filteredResult.pageSize;
-                    const endIndex = startIndex + filteredResult.pageSize;
-                    
-                    // Re-run the filter to get the correct page
-                    searchService.searchWithFilter({...searchParams, page}, searchWithinResults)
-                      .then(newResult => setFilteredResult(newResult))
-                      .catch(err => console.error('Pagination filter error:', err));
-                  } else {
-                    updateSearchParams({ page });
-                  }
-                }}
+                onPageChange={(page) => handleFilteredPageChange(page)}
                 searchWithinResults={searchWithinResults}
-                isFiltering={isFiltering}
               />
             ) : !isLoading ? (
               <div className="text-center py-12">

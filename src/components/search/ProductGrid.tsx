@@ -7,13 +7,17 @@ interface ProductGridProps {
   result: SearchResult;
   searchParams: SearchParams;
   onPageChange: (page: number) => void;
-  searchWithinResults?: string; // For display purposes
-  isFiltering?: boolean; // Show loading state when filtering
+  searchWithinResults?: string; // For filtering within current results
 }
 
-export function ProductGrid({ result, searchParams, onPageChange, searchWithinResults, isFiltering }: ProductGridProps) {
-  // Products are already filtered globally - no local filtering needed
-  const filteredProducts = result.items;
+export function ProductGrid({ result, searchParams, onPageChange, searchWithinResults }: ProductGridProps) {
+  // Filter products based on search within results
+  const filteredProducts = result.items.filter(product =>
+    !searchWithinResults || 
+    product.name.toLowerCase().includes(searchWithinResults.toLowerCase()) ||
+    (product.brand && product.brand.toLowerCase().includes(searchWithinResults.toLowerCase())) ||
+    product.categoryPath.some(cat => cat.toLowerCase().includes(searchWithinResults.toLowerCase()))
+  );
 
   const currentPage = searchParams.page || 1;
   const totalPages = Math.ceil(result.total / result.pageSize);
@@ -50,13 +54,13 @@ export function ProductGrid({ result, searchParams, onPageChange, searchWithinRe
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>
             {searchWithinResults 
-              ? `${result.total} produse pentru "${searchWithinResults}" ${isFiltering ? '(căutare...)' : ''}`
+              ? `${filteredProducts.length} din ${result.total} produse pentru "${searchWithinResults}"`
               : `${result.total} produse găsite`
             }
           </span>
-          {searchWithinResults && result.total === 0 && !isFiltering && (
+          {searchWithinResults && filteredProducts.length === 0 && (
             <span className="text-orange-600">
-              Nu s-au găsit produse cu "{searchWithinResults}" în rezultatele globale
+              Nu s-au găsit produse cu "{searchWithinResults}" în rezultatele curente
             </span>
           )}
         </div>
