@@ -142,8 +142,8 @@ export function SearchPage() {
                   <div className="text-sm text-muted-foreground">
                     {searchResult && (
                       <>
-                        Pagina {searchResult.page} din {Math.ceil(searchResult.total / searchResult.pageSize)} 
-                        ({searchResult.total} produse)
+                        {searchResult.total} produse găsite
+                        {searchWithinResults && ` (filtrate pentru "${searchWithinResults}")`}
                       </>
                     )}
                   </div>
@@ -156,7 +156,13 @@ export function SearchPage() {
                         <Input
                           placeholder="Filtrează în rezultate..."
                           value={searchWithinResults}
-                          onChange={(e) => setSearchWithinResults(e.target.value)}
+                          onChange={(e) => {
+                            setSearchWithinResults(e.target.value);
+                            // Reset to page 1 when filter changes
+                            if (e.target.value !== searchWithinResults) {
+                              updateSearchParams({ page: 1 });
+                            }
+                          }}
                           className="pl-10 w-64"
                           size="sm"
                         />
@@ -165,7 +171,11 @@ export function SearchPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setSearchWithinResults('')}
+                          onClick={() => {
+                            setSearchWithinResults('');
+                            // Reset to page 1 when clearing filter
+                            updateSearchParams({ page: 1 });
+                          }}
                           className="h-8 w-8 p-0"
                         >
                           ×

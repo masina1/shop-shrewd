@@ -2,6 +2,8 @@ import { SearchResult, SearchParams } from '@/types/search';
 import { ProductCard } from './ProductCard';
 import { Button } from '@/components/ui/button';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { normalizeForFilter } from '@/lib/normalization/textUtils';
+import { useMemo } from 'react';
 
 interface ProductGridProps {
   result: SearchResult;
@@ -11,16 +13,42 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ result, searchParams, onPageChange, searchWithinResults }: ProductGridProps) {
-  // Filter products based on search within results
-  const filteredProducts = result.items.filter(product =>
-    !searchWithinResults || 
-    product.name.toLowerCase().includes(searchWithinResults.toLowerCase()) ||
-    (product.brand && product.brand.toLowerCase().includes(searchWithinResults.toLowerCase())) ||
-    product.categoryPath.some(cat => cat.toLowerCase().includes(searchWithinResults.toLowerCase()))
-  );
-
+  // Filter the FULL result set (not just current page)
+  const filteredProducts = useMemo(() => {
+    if (!searchWithinResults?.trim()) {
+      return result.items;
+    }
+    
+    // Normalize filter query for diacritics-insensitive search
+    const normalizedQuery = normalizeForFilter(searchWithinResults);
+    const queryTokens = normalizedQuery.split(/\s+/);
+    
+    return result.items.filter(product => {
+      // Create comprehensive searchable text for each product
+      const searchableFields = [
+        product.name,
+        product.brand || '',
+        product.categoryPath.join(' '),
+        product.badges.join(' ')
+      ];
+      
+      const productSearchText = normalizeForFilter(searchableFields.join(' '));
+      
+      // All query tokens must match somewhere in the product text
+      return queryTokens.every(token => 
+        token.length > 0 && productSearchText.includes(token)
+      );
+    });
+  }, [result.items, searchWithinResults]);
+  
+  // Apply pagination to filtered results
   const currentPage = searchParams.page || 1;
-  const totalPages = Math.ceil(result.total / result.pageSize);
+  const pageSize = searchParams.pageSize || 24;
+  
+  const totalFilteredItems = filteredProducts.length;
+  const totalPages = Math.ceil(totalFilteredItems / pageSize);
+  
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -34,7 +62,7 @@ export function ProductGrid({ result, searchParams, onPageChange, searchWithinRe
     }
   };
 
-  if (result.items.length === 0) {
+  if (paginatedProducts.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
@@ -42,7 +70,10 @@ export function ProductGrid({ result, searchParams, onPageChange, searchWithinRe
         </div>
         <h3 className="text-lg font-semibold mb-2">Nu s-au găsit produse</h3>
         <p className="text-muted-foreground mb-4">
-          Încearcă să ajustezi termenii de căutare sau filtrele
+          {searchWithinResults 
+            ? `Nu s-au găsit produse care să conțină "${searchWithinResults}" în rezultatele curente`
+            : 'Încearcă să ajustezi termenii de căutare sau filtrele'
+          }
         </p>
       </div>
     );
@@ -54,20 +85,15 @@ export function ProductGrid({ result, searchParams, onPageChange, searchWithinRe
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>
             {searchWithinResults 
-              ? `${filteredProducts.length} din ${result.total} produse pentru "${searchWithinResults}"`
-              : `${result.total} produse găsite`
+              ? `${totalFilteredItems} din ${result.total} produse pentru "${searchWithinResults}" (pagina ${currentPage} din ${totalPages})`
+              : `${result.total} produse găsite (pagina ${currentPage} din ${totalPages})`
             }
           </span>
-          {searchWithinResults && filteredProducts.length === 0 && (
-            <span className="text-orange-600">
-              Nu s-au găsit produse cu "{searchWithinResults}" în rezultatele curente
-            </span>
-          )}
         </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
+        {paginatedProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>

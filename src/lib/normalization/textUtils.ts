@@ -80,6 +80,19 @@ export function extractSizeTokens(text: string): string[] {
 }
 
 /**
+ * Comprehensive text normalization for filtering
+ * Handles diacritics, case, and whitespace for robust search
+ */
+export function normalizeForFilter(text: string): string {
+  if (!text || typeof text !== 'string') return '';
+  return text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '') // Remove all diacritics using Unicode property
+    .toLowerCase()
+    .trim();
+}
+
+/**
  * Check if two normalized strings are similar (for duplicate detection)
  */
 export function areSimilar(str1: string, str2: string, threshold = 0.8): boolean {

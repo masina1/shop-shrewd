@@ -37,17 +37,14 @@ export const searchService: ISearchService = {
       // Generate facets
       const facets = await generateFacets(searchItems, params);
       
-      // Apply pagination
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const paginatedItems = searchItems.slice(startIndex, endIndex);
-
+      // Return full results without pagination
+      // Pagination will be handled in the UI after filtering within results
       return {
-        items: paginatedItems,
+        items: searchItems,
         total: searchItems.length,
         page,
         pageSize,
-        hasMore: endIndex < searchItems.length,
+        hasMore: false, // No server-side pagination anymore
         facets
       };
     } catch (error) {
