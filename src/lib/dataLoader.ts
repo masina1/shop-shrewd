@@ -605,9 +605,6 @@ export async function loadAllProducts(): Promise<any[]> {
         if (response.ok) {
           const text = await response.text();
           console.log(`📄 Raw text length for ${shop}: ${text.length} characters`);
-        
-        // Debug first few characters
-        console.log(`📝 First 100 chars for ${shop}:`, text.substring(0, 100));
           
           // Check if file is empty or contains HTML
           if (text.trim().length === 0) {

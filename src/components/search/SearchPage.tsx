@@ -18,6 +18,8 @@ export function SearchPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchWithinResults, setSearchWithinResults] = useState('');
+  const [filteredResult, setFilteredResult] = useState<SearchResult | null>(null);
+  const [isFiltering, setIsFiltering] = useState(false);
 
 
   // Convert URL params to search params
@@ -34,27 +36,20 @@ export function SearchPage() {
     setUrlSearchParams(urlString);
   };
 
-  // Fetch results when params change OR on initial load
+  // Fetch results when params change
   useEffect(() => {
     const fetchResults = async () => {
       setIsLoading(true);
       setError(null);
+      setFilteredResult(null); // Clear filtered results when main search changes
+      setSearchWithinResults(''); // Clear filter input
       
       try {
-        console.log('🔍 SearchPage: Starting search with params:', searchParams);
-        
-        // Always load results, even without a query (show all products)
         const result = await searchService.search(searchParams);
         setSearchResult(result);
-        
-        console.log(`📊 SearchPage: Loaded ${result.total} products, returning ${result.items.length} items to UI`);
-        
-        if (result.total === 0) {
-          console.warn('⚠️ SearchPage: Search returned 0 results - check data loading');
-        }
       } catch (err) {
         setError('Failed to load results. Please try again.');
-        console.error('❌ SearchPage error:', err);
+        console.error('Search error:', err);
       } finally {
         setIsLoading(false);
       }
@@ -63,26 +58,29 @@ export function SearchPage() {
     fetchResults();
   }, [searchParams]);
 
-  // Also trigger search on initial mount if no searchResult
+  // Handle results filtering with debouncing
   useEffect(() => {
-    if (!searchResult && !isLoading && !error) {
-      console.log('🚀 SearchPage: Initial mount - triggering default search');
-      const fetchResults = async () => {
-        setIsLoading(true);
-        try {
-          const result = await searchService.search({});
-          setSearchResult(result);
-          console.log(`📊 SearchPage: Initial load completed with ${result.total} products`);
-        } catch (err) {
-          setError('Failed to load products. Please refresh the page.');
-          console.error('❌ SearchPage initial load error:', err);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchResults();
+    if (!searchWithinResults.trim()) {
+      setFilteredResult(null);
+      setIsFiltering(false);
+      return;
     }
-  }, [searchResult, isLoading, error]);
+
+    setIsFiltering(true);
+    const timeoutId = setTimeout(async () => {
+      try {
+        const result = await searchService.searchWithFilter(searchParams, searchWithinResults);
+        setFilteredResult(result);
+      } catch (err) {
+        console.error('Filter error:', err);
+        setFilteredResult(null);
+      } finally {
+        setIsFiltering(false);
+      }
+    }, 250); // 250ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [searchWithinResults, searchParams]);
 
   const handleRetry = () => {
     const fetchResults = async () => {
@@ -172,51 +170,44 @@ export function SearchPage() {
                   <div className="text-sm text-muted-foreground">
                     {searchResult && (
                       <>
-                        {searchResult.total} produse găsite
-                        {searchWithinResults && ` (filtrate pentru "${searchWithinResults}")`}
+                        Pagina {searchResult.page} din {Math.ceil(searchResult.total / searchResult.pageSize)} 
+                        ({searchResult.total} produse)
                       </>
                     )}
                   </div>
                   
-                  {/* Search within results - positioned next to pagination */}
-                  {searchResult && searchResult.total > 10 && (
-                    <div className="flex items-center gap-2">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Filtrează în rezultate..."
-                          value={searchWithinResults}
-                          onChange={(e) => {
-                            setSearchWithinResults(e.target.value);
-                            // Reset to page 1 immediately when filter changes
-                            updateSearchParams({ page: 1 });
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              // Also reset to page 1 on Enter
-                              updateSearchParams({ page: 1 });
-                            }
-                          }}
-                          className="pl-10 w-64"
-                          size="sm"
-                        />
-                      </div>
-                      {searchWithinResults && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSearchWithinResults('');
-                            // Reset to page 1 when clearing filter
-                            updateSearchParams({ page: 1 });
-                          }}
-                          className="h-8 w-8 p-0"
-                        >
-                          ×
-                        </Button>
+                                        {/* Search within results - positioned next to pagination */}
+                      {searchResult && searchResult.total > 10 && (
+                        <div className="flex items-center gap-2">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Input
+                              placeholder="Filtrează în rezultate globale..."
+                              value={searchWithinResults}
+                              onChange={(e) => setSearchWithinResults(e.target.value)}
+                              className="pl-10 w-64"
+                              size="sm"
+                              disabled={isFiltering}
+                            />
+                            {isFiltering && (
+                              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                              </div>
+                            )}
+                          </div>
+                          {searchWithinResults && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSearchWithinResults('')}
+                              className="h-8 w-8 p-0"
+                              disabled={isFiltering}
+                            >
+                              ×
+                            </Button>
+                          )}
+                        </div>
                       )}
-                    </div>
-                  )}
                 </div>
 
                 {/* Sort and page size controls */}
@@ -261,37 +252,38 @@ export function SearchPage() {
             </div>
 
             {/* Product grid */}
-            {searchResult ? (
+            {(filteredResult || searchResult) ? (
               <ProductGrid
-                result={searchResult}
+                result={filteredResult || searchResult!}
                 searchParams={searchParams}
-                onPageChange={(page) => updateSearchParams({ page })}
+                onPageChange={(page) => {
+                  if (filteredResult) {
+                    // When filtering, handle pagination within filtered results
+                    const startIndex = (page - 1) * filteredResult.pageSize;
+                    const endIndex = startIndex + filteredResult.pageSize;
+                    
+                    // Re-run the filter to get the correct page
+                    searchService.searchWithFilter({...searchParams, page}, searchWithinResults)
+                      .then(newResult => setFilteredResult(newResult))
+                      .catch(err => console.error('Pagination filter error:', err));
+                  } else {
+                    updateSearchParams({ page });
+                  }
+                }}
                 searchWithinResults={searchWithinResults}
+                isFiltering={isFiltering}
               />
             ) : !isLoading ? (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🛒</div>
                 <h3 className="text-xl font-semibold mb-2">
-                  Toate produsele disponibile
+                  Începe să cauți produse
                 </h3>
                 <p className="text-muted-foreground">
                   Folosește bara de căutare sau filtrele pentru a găsi produsele dorite.
                 </p>
-                <Button onClick={() => updateSearchParams({ q: '' })} className="mt-4">
-                  Afișează toate produsele
-                </Button>
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">⏳</div>
-                <h3 className="text-xl font-semibold mb-2">
-                  Se încarcă produsele...
-                </h3>
-                <p className="text-muted-foreground">
-                  Așteptați să se încarce produsele din toate magazinele.
-                </p>
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

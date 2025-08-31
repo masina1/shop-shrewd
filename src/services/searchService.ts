@@ -5,7 +5,14 @@ import { stripDiacritics } from '@/lib/normalization/textUtils';
 
 export interface ISearchService {
   search(params: SearchParams): Promise<SearchResult>;
+  searchWithFilter(params: SearchParams, filterQuery: string): Promise<SearchResult>;
 }
+
+// Cache for global search results to enable efficient filtering
+let globalSearchCache: {
+  params: string;
+  allResults: SearchResultItem[];
+} | null = null;
 
 /**
  * Enhanced search service using master product index files
@@ -34,17 +41,30 @@ export const searchService: ISearchService = {
       // Apply sorting
       searchItems = applySorting(searchItems, params);
       
+      // Cache the complete global results for filtering
+      const cacheKey = JSON.stringify({ q: params.q, cat: params.cat, stores: params.stores, brand: params.brand, props: params.props, promo: params.promo, availability: params.availability, price_min: params.price_min, price_max: params.price_max });
+      globalSearchCache = {
+        params: cacheKey,
+        allResults: searchItems.map(item => ({
+          ...item,
+          _filterText: precomputeFilterText(item) // Precompute for fast filtering
+        }))
+      };
+      
       // Generate facets
       const facets = await generateFacets(searchItems, params);
       
-      // Return full results without pagination
-      // Pagination will be handled in the UI after filtering within results
+      // Apply pagination
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedItems = searchItems.slice(startIndex, endIndex);
+
       return {
-        items: searchItems,
+        items: paginatedItems,
         total: searchItems.length,
         page,
         pageSize,
-        hasMore: false, // No server-side pagination anymore
+        hasMore: endIndex < searchItems.length,
         facets
       };
     } catch (error) {
@@ -55,6 +75,71 @@ export const searchService: ISearchService = {
         items: [],
         total: 0,
         page,
+        pageSize,
+        hasMore: false,
+        facets: {
+          categories: [],
+          stores: {},
+          properties: [],
+          types: [],
+          brands: [],
+          price: { min: 0, max: 100, buckets: [] },
+          activeCounts: {}
+        }
+      };
+    }
+  },
+
+  async searchWithFilter(params: SearchParams, filterQuery: string): Promise<SearchResult> {
+    const pageSize = params.pageSize || 24;
+    const page = 1; // Always reset to page 1 when filtering
+
+    try {
+      // Use cached global results if available and params match
+      const cacheKey = JSON.stringify({ q: params.q, cat: params.cat, stores: params.stores, brand: params.brand, props: params.props, promo: params.promo, availability: params.availability, price_min: params.price_min, price_max: params.price_max });
+      
+      let allResults: SearchResultItem[];
+      
+      if (globalSearchCache && globalSearchCache.params === cacheKey) {
+        // Use cached results
+        allResults = globalSearchCache.allResults;
+        console.log(`🔍 Using cached global results: ${allResults.length} products`);
+      } else {
+        // Fallback: run full search if cache miss
+        console.log(`🔄 Cache miss, running full search for filter...`);
+        const fullResult = await this.search(params);
+        allResults = globalSearchCache?.allResults || [];
+      }
+
+      // Apply results filter - case-insensitive, no diacritics, AND logic
+      const filteredResults = applyResultsFilter(allResults, filterQuery);
+      
+      console.log(`🔍 Results filter "${filterQuery}": ${filteredResults.length} matches from ${allResults.length} total`);
+      
+      // Apply pagination to filtered results
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedItems = filteredResults.slice(startIndex, endIndex);
+
+      // Generate facets from filtered results
+      const facets = await generateFacets(filteredResults, params);
+
+      return {
+        items: paginatedItems,
+        total: filteredResults.length,
+        page,
+        pageSize,
+        hasMore: endIndex < filteredResults.length,
+        facets
+      };
+    } catch (error) {
+      console.error('Filter search error:', error);
+      
+      // Return empty result on error
+      return {
+        items: [],
+        total: 0,
+        page: 1,
         pageSize,
         hasMore: false,
         facets: {
@@ -425,6 +510,52 @@ function getCategoryRelevanceBoost(query: string, categoryPath: string[]): numbe
   }
   
   return 0; // No category boost
+}
+
+/**
+ * Precompute filter text for fast results filtering
+ * Creates searchable text from: name + brand + size + categoryPath
+ */
+function precomputeFilterText(item: SearchResultItem): string {
+  const parts = [
+    item.name,
+    item.brand || '',
+    // Extract size from badges (like "1L", "500g", etc.)
+    ...item.badges.filter(badge => /\d+\s*(ml|l|g|kg|buc|bucati|bucăți)/.test(badge.toLowerCase())),
+    ...item.categoryPath
+  ];
+  
+  return parts
+    .join(' ')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Apply results filter to global result set
+ * Preserves original ranking order, no re-sorting
+ */
+function applyResultsFilter(allResults: SearchResultItem[], filterQuery: string): SearchResultItem[] {
+  if (!filterQuery.trim()) {
+    return allResults;
+  }
+
+  const query = filterQuery.toLowerCase().trim();
+  const queryTokens = query.split(/\s+/).filter(token => token.length > 0);
+  
+  if (queryTokens.length === 0) {
+    return allResults;
+  }
+
+  // Filter: ALL tokens must appear in product (AND logic)
+  // Preserve exact order from global search
+  return allResults.filter(item => {
+    const filterText = (item as any)._filterText || precomputeFilterText(item);
+    
+    // Check if ALL query tokens appear in the filter text
+    return queryTokens.every(token => filterText.includes(token));
+  });
 }
 
 /**
