@@ -169,7 +169,7 @@ function extractPromoPercentage(promoLabel: string): number | undefined {
 async function applyFilters(items: SearchResultItem[], params: SearchParams): Promise<SearchResultItem[]> {
   let filtered = [...items];
 
-  // Text search with relevance scoring
+  // Text search with category-first relevance scoring
   if (params.q) {
     const query = stripDiacritics(params.q.toLowerCase());
     
@@ -181,60 +181,67 @@ async function applyFilters(items: SearchResultItem[], params: SearchParams): Pr
       const itemName = stripDiacritics(item.name.toLowerCase());
       const itemBrand = item.brand ? stripDiacritics(item.brand.toLowerCase()) : '';
       
-      // Exact name match (highest priority)
+      // **PRIORITY 1: CATEGORY RELEVANCE** (highest boost)
+      const categoryBoost = getCategoryRelevanceBoost(query, item.categoryPath);
+      if (categoryBoost > 0) {
+        score += categoryBoost;
+        hasMatch = true;
+      }
+      
+      // **PRIORITY 2: EXACT MATCHES**
+      // Exact name match
       if (itemName === query) {
         score += 100;
         hasMatch = true;
       }
-      // Name starts with query (high priority)
+      // Name starts with query  
       else if (itemName.startsWith(query)) {
         score += 80;
         hasMatch = true;
       }
-      // Name contains query as whole word (medium priority)
+      // Name contains query as whole word
       else if (itemName.includes(` ${query} `) || itemName.includes(` ${query}`)) {
         score += 60;
         hasMatch = true;
       }
-      // Name contains query anywhere (lower priority)
-      else if (itemName.includes(query)) {
-        score += 40;
-        hasMatch = true;
-      }
       
-      // Brand matches (medium priority)
+      // Brand exact matches
       if (itemBrand === query) {
         score += 70;
         hasMatch = true;
       } else if (itemBrand.startsWith(query)) {
         score += 50;
         hasMatch = true;
-      } else if (itemBrand.includes(query)) {
+      }
+      
+      // **PRIORITY 3: PARTIAL MATCHES** (lower scores)
+      // Name contains query anywhere
+      if (itemName.includes(query)) {
+        score += 40;
+        hasMatch = true;
+      }
+      
+      // Brand partial matches
+      if (itemBrand.includes(query)) {
         score += 30;
         hasMatch = true;
       }
       
-      // Category matches (lower priority)
-      if (item.categoryPath.some(cat => {
+      // Category text matches (when not boosted above)
+      if (categoryBoost === 0 && item.categoryPath.some(cat => {
         const catNormalized = stripDiacritics(cat.toLowerCase());
-        if (catNormalized.includes(query)) {
-          score += 20;
-          return true;
-        }
-        return false;
+        return catNormalized.includes(query);
       })) {
+        score += 20;
         hasMatch = true;
       }
 
       // Badge matches (lowest priority)
       if (item.badges.some(badge => {
         const badgeNormalized = stripDiacritics(badge.toLowerCase());
-        if (badgeNormalized.includes(query)) {
-          score += 10;
-          return true;
-        }
-        return false;
+        return badgeNormalized.includes(query);
       })) {
+        score += 10;
         hasMatch = true;
       }
       
@@ -348,6 +355,79 @@ function applySorting(items: SearchResultItem[], params: SearchParams): SearchRe
       // With query, items are already sorted by relevance score
       return items;
   }
+}
+
+/**
+ * Get category relevance boost for search query
+ * Implements Priority 1: Products from relevant category get highest scores
+ */
+function getCategoryRelevanceBoost(query: string, categoryPath: string[]): number {
+  const normalizedQuery = stripDiacritics(query.toLowerCase());
+  
+  // Define category mappings for common search terms
+  const categoryMappings: Record<string, string[]> = {
+    // Milk & Dairy queries should prioritize dairy categories
+    'lapte': ['lactate & oua', 'lactate & branzeturi', 'lactate & lapte'],
+    'milk': ['lactate & oua', 'lactate & branzeturi', 'lactate & lapte'],
+    'iaurt': ['lactate & oua', 'lactate & branzeturi', 'lactate & iaurt'],
+    'yogurt': ['lactate & oua', 'lactate & branzeturi', 'lactate & iaurt'],
+    'branza': ['lactate & oua', 'lactate & branzeturi'],
+    'cheese': ['lactate & oua', 'lactate & branzeturi'],
+    'smantana': ['lactate & oua', 'lactate & branzeturi'],
+    'unt': ['lactate & oua', 'lactate & unt'],
+    'butter': ['lactate & oua', 'lactate & unt'],
+    
+    // Meat queries should prioritize meat categories
+    'carne': ['carne & peste', 'carne & mezeluri', 'carne & pasari'],
+    'meat': ['carne & peste', 'carne & mezeluri'],
+    'porc': ['carne & peste', 'carne & porc'],
+    'vita': ['carne & peste', 'carne & vita'],
+    'pasare': ['carne & peste', 'carne & pasari'],
+    
+    // Beverages
+    'apa': ['bauturi'],
+    'water': ['bauturi'],
+    'suc': ['bauturi'],
+    'juice': ['bauturi'],
+    'bere': ['bauturi', 'bauturi alcoolice'],
+    'beer': ['bauturi', 'bauturi alcoolice'],
+    
+    // Fruits & Vegetables
+    'fructe': ['fructe & legume'],
+    'fruits': ['fructe & legume'],
+    'legume': ['fructe & legume'],
+    'vegetables': ['fructe & legume'],
+    'mere': ['fructe & legume'],
+    'apples': ['fructe & legume'],
+    'banane': ['fructe & legume'],
+    'bananas': ['fructe & legume'],
+    
+    // Bakery
+    'paine': ['brutarie & patiserie'],
+    'bread': ['brutarie & patiserie'],
+    
+    // Sweets
+    'ciocolata': ['dulciuri & mic dejun'],
+    'chocolate': ['dulciuri & mic dejun'],
+    'bomboane': ['dulciuri & mic dejun'],
+    'candy': ['dulciuri & mic dejun']
+  };
+  
+  // Check if query matches any category mapping
+  const relevantCategories = categoryMappings[normalizedQuery] || [];
+  
+  for (const category of relevantCategories) {
+    // Check if product is in a relevant category
+    for (const productCategory of categoryPath) {
+      const normalizedProductCategory = stripDiacritics(productCategory.toLowerCase());
+      
+      if (normalizedProductCategory.includes(category)) {
+        return 200; // High boost for category-relevant products
+      }
+    }
+  }
+  
+  return 0; // No category boost
 }
 
 /**
