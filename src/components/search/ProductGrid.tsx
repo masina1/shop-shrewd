@@ -48,6 +48,8 @@ export function ProductGrid({ result, searchParams, onPageChange, searchWithinRe
   const totalFilteredItems = filteredProducts.length;
   const totalPages = Math.ceil(totalFilteredItems / pageSize);
   
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
   const handlePrevPage = () => {

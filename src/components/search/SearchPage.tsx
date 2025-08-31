@@ -34,18 +34,27 @@ export function SearchPage() {
     setUrlSearchParams(urlString);
   };
 
-  // Fetch results when params change
+  // Fetch results when params change OR on initial load
   useEffect(() => {
     const fetchResults = async () => {
       setIsLoading(true);
       setError(null);
       
       try {
+        console.log('🔍 SearchPage: Starting search with params:', searchParams);
+        
+        // Always load results, even without a query (show all products)
         const result = await searchService.search(searchParams);
         setSearchResult(result);
+        
+        console.log(`📊 SearchPage: Loaded ${result.total} products, returning ${result.items.length} items to UI`);
+        
+        if (result.total === 0) {
+          console.warn('⚠️ SearchPage: Search returned 0 results - check data loading');
+        }
       } catch (err) {
         setError('Failed to load results. Please try again.');
-        console.error('Search error:', err);
+        console.error('❌ SearchPage error:', err);
       } finally {
         setIsLoading(false);
       }
@@ -53,6 +62,27 @@ export function SearchPage() {
 
     fetchResults();
   }, [searchParams]);
+
+  // Also trigger search on initial mount if no searchResult
+  useEffect(() => {
+    if (!searchResult && !isLoading && !error) {
+      console.log('🚀 SearchPage: Initial mount - triggering default search');
+      const fetchResults = async () => {
+        setIsLoading(true);
+        try {
+          const result = await searchService.search({});
+          setSearchResult(result);
+          console.log(`📊 SearchPage: Initial load completed with ${result.total} products`);
+        } catch (err) {
+          setError('Failed to load products. Please refresh the page.');
+          console.error('❌ SearchPage initial load error:', err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchResults();
+    }
+  }, [searchResult, isLoading, error]);
 
   const handleRetry = () => {
     const fetchResults = async () => {
@@ -242,13 +272,26 @@ export function SearchPage() {
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🛒</div>
                 <h3 className="text-xl font-semibold mb-2">
-                  Începe să cauți produse
+                  Toate produsele disponibile
                 </h3>
                 <p className="text-muted-foreground">
                   Folosește bara de căutare sau filtrele pentru a găsi produsele dorite.
                 </p>
+                <Button onClick={() => updateSearchParams({ q: '' })} className="mt-4">
+                  Afișează toate produsele
+                </Button>
               </div>
-            ) : null}
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">⏳</div>
+                <h3 className="text-xl font-semibold mb-2">
+                  Se încarcă produsele...
+                </h3>
+                <p className="text-muted-foreground">
+                  Așteptați să se încarce produsele din toate magazinele.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

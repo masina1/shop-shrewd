@@ -8,6 +8,10 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Serve the /out directory as static files for development
+    fs: {
+      allow: ['..', './out']
+    }
   },
   plugins: [
     react(),
@@ -19,4 +23,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Configure static file serving
+  publicDir: 'public',
+  // Allow serving files from /out directory
+  optimizeDeps: {
+    exclude: ['out']
+  }
 }));
