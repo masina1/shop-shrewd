@@ -1,17 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { AlertCircle, Search } from 'lucide-react';
 import { SearchParams, SearchResult } from '@/types/search';
 import { searchService } from '@/services/searchService';
 import { urlToSearchParams, searchParamsToUrl } from '@/utils/searchUtils';
 import { FilterSidebar } from './FilterSidebar';
 import { MobileFiltersSheet } from './MobileFiltersSheet';
 import { ProductGrid } from './ProductGrid';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
 
 export function SearchPage() {
   const [urlSearchParams, setUrlSearchParams] = useSearchParams();
@@ -19,6 +18,7 @@ export function SearchPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchWithinResults, setSearchWithinResults] = useState('');
+
 
   // Convert URL params to search params
   const searchParams = useMemo(() => urlToSearchParams(urlSearchParams), [urlSearchParams]);
@@ -72,15 +72,7 @@ export function SearchPage() {
     fetchResults();
   };
 
-  const handleSearchWithinResults = () => {
-    if (searchWithinResults.trim()) {
-      updateSearchParams({ 
-        q: searchWithinResults.trim(),
-        page: 1 
-      });
-      setSearchWithinResults('');
-    }
-  };
+
 
   const handleSortChange = (sort: string) => {
     updateSearchParams({ sort: sort as SearchParams['sort'] });
@@ -143,38 +135,43 @@ export function SearchPage() {
           <div className="flex-1 min-w-0">
             {/* Top controls */}
             <div className="mb-6 space-y-4">
-              {/* Search within results */}
-              <div className="flex gap-3">
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Caută în rezultate..."
-                    value={searchWithinResults}
-                    onChange={(e) => setSearchWithinResults(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSearchWithinResults();
-                      }
-                    }}
-                    className="pl-10"
-                  />
-                </div>
-                <Button 
-                  onClick={handleSearchWithinResults}
-                  disabled={!searchWithinResults.trim()}
-                >
-                  Caută
-                </Button>
-              </div>
-
-              {/* Sort and results count */}
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
-                  {searchResult && (
-                    <>
-                      Pagina {searchResult.page} din {Math.ceil(searchResult.total / searchResult.pageSize)} 
-                      ({searchResult.total} produse)
-                    </>
+              {/* Search within results + Sort controls */}
+              <div className="flex items-center justify-between gap-4">
+                {/* Search within current results */}
+                <div className="flex items-center gap-3">
+                  <div className="text-sm text-muted-foreground">
+                    {searchResult && (
+                      <>
+                        Pagina {searchResult.page} din {Math.ceil(searchResult.total / searchResult.pageSize)} 
+                        ({searchResult.total} produse)
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Search within results - positioned next to pagination */}
+                  {searchResult && searchResult.total > 10 && (
+                    <div className="flex items-center gap-2">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Filtrează în rezultate..."
+                          value={searchWithinResults}
+                          onChange={(e) => setSearchWithinResults(e.target.value)}
+                          className="pl-10 w-64"
+                          size="sm"
+                        />
+                      </div>
+                      {searchWithinResults && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSearchWithinResults('')}
+                          className="h-8 w-8 p-0"
+                        >
+                          ×
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -225,6 +222,7 @@ export function SearchPage() {
                 result={searchResult}
                 searchParams={searchParams}
                 onPageChange={(page) => updateSearchParams({ page })}
+                searchWithinResults={searchWithinResults}
               />
             ) : !isLoading ? (
               <div className="text-center py-12">

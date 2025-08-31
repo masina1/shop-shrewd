@@ -44,8 +44,47 @@ export class AdminDataService {
    */
   async loadProcessingStats(): Promise<ProcessingReport[]> {
     try {
-      // In production, this would aggregate data from your preprocessing reports
-      return this.getMockProcessingStats();
+      console.log('📊 Loading real processing stats from preprocessing reports...');
+      
+      const shops = ['freshful', 'auchan', 'carrefour', 'mega', 'lidl'];
+      const stats: ProcessingReport[] = [];
+      
+      for (const shop of shops) {
+        try {
+          const statsPath = `/out/${shop}-final/metadata.json`;
+          const response = await fetch(statsPath);
+          
+          if (response.ok) {
+            const metadata = await response.json();
+            
+            // Transform preprocessing metadata to admin format
+            const report: ProcessingReport = {
+              shop: shop.charAt(0).toUpperCase() + shop.slice(1),
+              totalProducts: metadata.stats?.totalProducts || 0,
+              processedProducts: metadata.stats?.totalProducts || 0, // All products are processed in current format
+              unmappedProducts: 0, // No unmapped in current format
+              rejectedProducts: 0, // No rejected in current format  
+              mappingSuccessRate: 1.0, // 100% success rate in current format
+              timestamp: metadata.processed_at || new Date().toISOString()
+            };
+            
+            stats.push(report);
+            console.log(`✅ Loaded stats for ${shop}: ${report.totalProducts} products`);
+          } else {
+            console.log(`⚠️ No metadata for ${shop}: ${response.status}`);
+          }
+        } catch (error) {
+          console.warn(`⚠️ Failed to load stats for ${shop}:`, error);
+        }
+      }
+      
+      // If no real stats found, return mock data
+      if (stats.length === 0) {
+        console.log('📦 No real stats found, returning mock data for testing');
+        return this.getMockProcessingStats();
+      }
+      
+      return stats;
     } catch (error) {
       console.error('Failed to load processing stats:', error);
       throw new Error('Failed to load processing stats');

@@ -82,7 +82,24 @@ function convertToSearchResultItem(product: any): SearchResultItem {
   const productName = product.title || 'Unknown Product';
   const productBrand = product.brand || '';
   const productPrice = product.pricing?.price || 0;
-  const productImage = product.images?.[0]?.url || '/placeholder.svg';
+  
+  // Fix image handling - check both images array format and fallback
+  let productImage = '/placeholder.svg';
+  if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+    // Handle new preprocessor format: images: [{"url": "...", "role": "main"}]
+    if (product.images[0]?.url) {
+      productImage = product.images[0].url;
+    }
+    // Handle old format: images: ["url"]
+    else if (typeof product.images[0] === 'string') {
+      productImage = product.images[0];
+    }
+  }
+  // Handle single image field
+  else if (typeof product.image === 'string') {
+    productImage = product.image;
+  }
+  
   const productCategory = product.category_path?.[0] || 'Other';
   const productCategory2 = product.category_path?.[1] || '';
   
@@ -152,36 +169,83 @@ function extractPromoPercentage(promoLabel: string): number | undefined {
 async function applyFilters(items: SearchResultItem[], params: SearchParams): Promise<SearchResultItem[]> {
   let filtered = [...items];
 
-  // Text search
+  // Text search with relevance scoring
   if (params.q) {
     const query = stripDiacritics(params.q.toLowerCase());
-    filtered = filtered.filter(item => {
-      // Search in name
-      if (stripDiacritics(item.name.toLowerCase()).includes(query)) {
-        return true;
+    
+    // First pass: collect all matches with relevance scores
+    const scoredItems = filtered.map(item => {
+      let score = 0;
+      let hasMatch = false;
+      
+      const itemName = stripDiacritics(item.name.toLowerCase());
+      const itemBrand = item.brand ? stripDiacritics(item.brand.toLowerCase()) : '';
+      
+      // Exact name match (highest priority)
+      if (itemName === query) {
+        score += 100;
+        hasMatch = true;
+      }
+      // Name starts with query (high priority)
+      else if (itemName.startsWith(query)) {
+        score += 80;
+        hasMatch = true;
+      }
+      // Name contains query as whole word (medium priority)
+      else if (itemName.includes(` ${query} `) || itemName.includes(` ${query}`)) {
+        score += 60;
+        hasMatch = true;
+      }
+      // Name contains query anywhere (lower priority)
+      else if (itemName.includes(query)) {
+        score += 40;
+        hasMatch = true;
       }
       
-      // Search in brand
-      if (item.brand && stripDiacritics(item.brand.toLowerCase()).includes(query)) {
-        return true;
+      // Brand matches (medium priority)
+      if (itemBrand === query) {
+        score += 70;
+        hasMatch = true;
+      } else if (itemBrand.startsWith(query)) {
+        score += 50;
+        hasMatch = true;
+      } else if (itemBrand.includes(query)) {
+        score += 30;
+        hasMatch = true;
       }
       
-      // Search in category path
-      if (item.categoryPath.some(cat => 
-        stripDiacritics(cat.toLowerCase()).includes(query)
-      )) {
-        return true;
+      // Category matches (lower priority)
+      if (item.categoryPath.some(cat => {
+        const catNormalized = stripDiacritics(cat.toLowerCase());
+        if (catNormalized.includes(query)) {
+          score += 20;
+          return true;
+        }
+        return false;
+      })) {
+        hasMatch = true;
       }
 
-      // Search in badges
-      if (item.badges.some(badge => 
-        stripDiacritics(badge.toLowerCase()).includes(query)
-      )) {
-        return true;
+      // Badge matches (lowest priority)
+      if (item.badges.some(badge => {
+        const badgeNormalized = stripDiacritics(badge.toLowerCase());
+        if (badgeNormalized.includes(query)) {
+          score += 10;
+          return true;
+        }
+        return false;
+      })) {
+        hasMatch = true;
       }
       
-      return false;
+      return { item, score, hasMatch };
     });
+    
+    // Filter out non-matches and sort by relevance score
+    filtered = scoredItems
+      .filter(({ hasMatch }) => hasMatch)
+      .sort((a, b) => b.score - a.score) // Sort by score descending
+      .map(({ item }) => item);
   }
 
   // Category filter
@@ -276,8 +340,13 @@ function applySorting(items: SearchResultItem[], params: SearchParams): SearchRe
       
     case 'relevance':
     default:
-      // Sort by price for now (could enhance with relevance scoring)
-      return items.sort((a, b) => a.cheapest.price - b.cheapest.price);
+      // If there's a search query, relevance is already applied in filtering
+      // If no query, sort by price ascending as default
+      if (!params.q) {
+        return items.sort((a, b) => a.cheapest.price - b.cheapest.price);
+      }
+      // With query, items are already sorted by relevance score
+      return items;
   }
 }
 

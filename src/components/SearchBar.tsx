@@ -27,7 +27,7 @@ export const SearchBar = () => {
           // Use real search service to get suggestions
           const result = await searchService.search({
             q: query.trim(),
-            pageSize: 6, // Limit suggestions to 6 items
+            pageSize: 8, // Limit suggestions to 8 items for better UX
             page: 1
           });
           setSuggestions(result.items);
@@ -107,7 +107,7 @@ export const SearchBar = () => {
         <Input
           ref={inputRef}
           type="text"
-          placeholder="Caută produse, branduri, categorii..."
+          placeholder="Caută produse, branduri, categorii... (18K+ produse disponibile)"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
