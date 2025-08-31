@@ -91,12 +91,31 @@ export function ProductGrid({ result, searchParams, onPageChange, searchWithinRe
       return result.items;
     }
     
-    const query = stripDiacritics(searchWithinResults.toLowerCase());
+    // STEP 1: Filter products (keep original broad matching)
+    const normalizedQuery = normalizeForFilter(searchWithinResults);
+    const queryTokens = normalizedQuery.split(/\s+/);
     
-    // Apply SAME SCORING LOGIC as header search
-    const scoredItems = result.items.map(item => {
+    const matchingProducts = result.items.filter(product => {
+      // Create comprehensive searchable text for each product
+      const searchableFields = [
+        product.name,
+        product.brand || '',
+        product.categoryPath.join(' '),
+        product.badges.join(' ')
+      ];
+      
+      const productSearchText = normalizeForFilter(searchableFields.join(' '));
+      
+      // All query tokens must match somewhere in the product text
+      return queryTokens.every(token => 
+        token.length > 0 && productSearchText.includes(token)
+      );
+    });
+    
+    // STEP 2: Apply SMART SCORING to sort results (same as header search)
+    const query = stripDiacritics(searchWithinResults.toLowerCase());
+    const scoredItems = matchingProducts.map(item => {
       let score = 0;
-      let hasMatch = false;
       
       const itemName = stripDiacritics(item.name.toLowerCase());
       const itemBrand = item.brand ? stripDiacritics(item.brand.toLowerCase()) : '';
@@ -105,39 +124,31 @@ export function ProductGrid({ result, searchParams, onPageChange, searchWithinRe
       const categoryBoost = getCategoryRelevanceBoost(query, item.categoryPath);
       if (categoryBoost > 0) {
         score += categoryBoost;
-        hasMatch = true;
       }
       
       // **PRIORITY 2: EXACT MATCHES**
       if (itemName === query) {
         score += 100;
-        hasMatch = true;
       } else if (itemName.startsWith(query)) {
         score += 80;
-        hasMatch = true;
       } else if (itemName.includes(` ${query} `) || itemName.includes(` ${query}`)) {
         score += 60;
-        hasMatch = true;
       }
       
       // Brand exact matches
       if (itemBrand === query) {
         score += 70;
-        hasMatch = true;
       } else if (itemBrand.startsWith(query)) {
         score += 50;
-        hasMatch = true;
       }
       
       // **PRIORITY 3: PARTIAL MATCHES**
       if (itemName.includes(query)) {
         score += 40;
-        hasMatch = true;
       }
       
       if (itemBrand.includes(query)) {
         score += 30;
-        hasMatch = true;
       }
       
       // Category text matches
@@ -146,7 +157,6 @@ export function ProductGrid({ result, searchParams, onPageChange, searchWithinRe
         return catNormalized.includes(query);
       })) {
         score += 20;
-        hasMatch = true;
       }
 
       // Badge matches
@@ -155,15 +165,13 @@ export function ProductGrid({ result, searchParams, onPageChange, searchWithinRe
         return badgeNormalized.includes(query);
       })) {
         score += 10;
-        hasMatch = true;
       }
       
-      return { item, score, hasMatch };
+      return { item, score };
     });
     
-    // Filter out non-matches and sort by relevance score (same as header search)
+    // Sort by relevance score (same as header search) 
     return scoredItems
-      .filter(({ hasMatch }) => hasMatch)
       .sort((a, b) => b.score - a.score) // Sort by score descending
       .map(({ item }) => item);
   }, [result.items, searchWithinResults]);
