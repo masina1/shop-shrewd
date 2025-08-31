@@ -11,13 +11,9 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ result, searchParams, onPageChange, searchWithinResults }: ProductGridProps) {
-  // Filter products based on search within results
-  const filteredProducts = result.items.filter(product =>
-    !searchWithinResults || 
-    product.name.toLowerCase().includes(searchWithinResults.toLowerCase()) ||
-    (product.brand && product.brand.toLowerCase().includes(searchWithinResults.toLowerCase())) ||
-    product.categoryPath.some(cat => cat.toLowerCase().includes(searchWithinResults.toLowerCase()))
-  );
+  // No filtering here - all filtering is handled in SearchPage (pure in-memory)
+  // ProductGrid just displays the already-filtered results from parent
+  const filteredProducts = result.items;
 
   const currentPage = searchParams.page || 1;
   const totalPages = Math.ceil(result.total / result.pageSize);
