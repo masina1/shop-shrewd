@@ -32,6 +32,7 @@ import OfferDetail from "./pages/OfferDetail";
 import AdminReview from "./pages/admin/AdminReview";
 import AdminOfferDetail from "./pages/admin/AdminOfferDetail";
 import MonetizationPage from "./pages/admin/MonetizationPage";
+import MockDataPage from "./pages/MockDataPage";
 import { DebugPanel } from "./components/DebugPanel";
 
 const queryClient = new QueryClient();
@@ -90,6 +91,7 @@ const App = () => (
                 <Route path="/rewards" element={<RewardsPage />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
                 <Route path="/offer/:id" element={<OfferDetail />} />
+                <Route path="/mock-data" element={<MockDataPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
