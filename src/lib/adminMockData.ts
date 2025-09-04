@@ -1,4 +1,21 @@
-// Mock data for admin dashboard
+/**
+ * ================================
+ * ADMIN MOCK DATA
+ * ================================
+ * 
+ * This file contains admin-specific mock data structures and metadata.
+ * It LINKS to the main mock data (mockData.ts) for core entities but adds
+ * admin-specific fields like status, metadata, configuration, etc.
+ * 
+ * DEVELOPER NOTE: When implementing real APIs:
+ * 1. Replace admin-specific data with admin API endpoints
+ * 2. Core product/offer data should come from the same API as user-facing data
+ * 3. Admin APIs should extend core data with additional metadata
+ */
+
+import { mockSearchProducts, getCheapestPrice, type SearchProduct } from './mockData';
+
+// Store configuration (admin-only)
 export interface Store {
   id: string;
   name: string;
@@ -14,31 +31,32 @@ export interface Store {
   testUrls: string[];
 }
 
-export interface Product {
-  id: string;
-  name: string;
-  brand: string;
-  size: string;
-  category: string;
+// Admin product extends core product with metadata  
+export interface AdminProduct {
+  // Core product data (from mockData.ts)
+  coreProduct: SearchProduct;
+  
+  // Admin-specific metadata
   gtin: string | null;
-  image: string;
   normalizedName: string;
   status: 'active' | 'archived' | 'pending';
   description?: string;
   updatedAt: string;
   tags: string[];
+  size: string; // More detailed than core product
 }
 
-export interface Offer {
+// Admin offer extends core offer data with metadata
+export interface AdminOffer {
   id: string;
-  productId: string;
-  storeId: string;
-  price: number;
+  productId: string; // Links to core product
+  storeId: string;   // Links to admin store config
+  price: number;     // Same as core data
   unitPrice: number;
   promo: string | null;
-  url: string;
-  lastSeen: string;
-  status: 'active' | 'out_of_stock' | 'expired';
+  url: string;       // Admin-specific: direct store URL
+  lastSeen: string;  // Admin-specific: scraping metadata  
+  status: 'active' | 'out_of_stock' | 'expired'; // Admin-specific
 }
 
 export interface Combo {
@@ -138,52 +156,44 @@ export const mockStores: Store[] = [
   }
 ];
 
-export const mockProducts: Product[] = [
+// LINKED ADMIN PRODUCTS - References core products with admin metadata
+// TODO: Replace with admin API that extends core product API data
+export const mockAdminProducts: AdminProduct[] = [
   {
-    id: 'p1',
-    name: 'Lapte 1.5% 1.5L',
-    brand: 'Napolact',
-    size: '1.5 L',
-    category: 'Dairy',
+    coreProduct: mockSearchProducts[0], // Links to "Lapte integral 3.5% 1L Zuzu"
     gtin: '5941234567890',
-    image: '/placeholder-milk.png',
-    normalizedName: 'lapte-1-5-1-5l',
+    normalizedName: 'lapte-integral-3-5-1l-zuzu',
     status: 'active',
-    description: 'Fresh milk 1.5% fat content',
+    description: 'Fresh integral milk 3.5% fat content',
     updatedAt: '2025-08-20 14:30',
-    tags: ['dairy', 'fresh', 'napolact']
+    tags: ['dairy', 'fresh', 'zuzu', 'integral'],
+    size: '1L'
   },
   {
-    id: 'p2',
-    name: 'Mușchi file 100g',
-    brand: 'Matache Măcelaru\'',
-    size: '100 g',
-    category: 'Deli',
+    coreProduct: mockSearchProducts[3], // Links to "Mușchi file 100g Scandia"
     gtin: null,
-    image: '/placeholder-ham.png',
-    normalizedName: 'muschifile-100g',
+    normalizedName: 'muschi-file-100g-scandia',
     status: 'active',
     description: 'Sliced ham, premium quality',
     updatedAt: '2025-08-20 12:15',
-    tags: ['deli', 'meat', 'sliced']
+    tags: ['deli', 'meat', 'sliced', 'scandia'],
+    size: '100g'
   },
   {
-    id: 'p3',
-    name: 'Pâine albă 500g',
-    brand: 'Vel Pitar',
-    size: '500 g',
-    category: 'Bakery',
+    coreProduct: mockSearchProducts[1], // Links to "Pâine integrală 500g Vel Pitar"
     gtin: '5947123456789',
-    image: '/placeholder-bread.png',
-    normalizedName: 'paine-alba-500g',
+    normalizedName: 'paine-integrala-500g-vel-pitar',
     status: 'active',
-    description: 'White bread, fresh daily',
+    description: 'Integral bread, fresh daily',
     updatedAt: '2025-08-20 08:45',
-    tags: ['bakery', 'bread', 'daily']
+    tags: ['bakery', 'bread', 'daily', 'integral', 'vel-pitar'],
+    size: '500g'
   }
 ];
 
-export const mockOffers: Offer[] = [
+// LINKED ADMIN OFFERS - Extends core offer data with admin metadata  
+// TODO: Replace with admin API that extends core offer API data
+export const mockAdminOffers: AdminOffer[] = [
   {
     id: 'o1',
     productId: 'p1',
@@ -354,23 +364,67 @@ export const mockDataQuality = {
 };
 
 export const mockKPIs = {
-  totalProducts: mockProducts.length,
-  totalOffers: mockOffers.length,
+  totalProducts: mockAdminProducts.length,
+  totalOffers: mockAdminOffers.length,
   activeStores: mockStores.filter(s => s.enabled).length,
   priceUpdatesToday: 247,
   alertsQueued: 12
 };
 
-// Utility functions
+// ADMIN UTILITY FUNCTIONS - Work with linked data
+// TODO: Replace with admin API utility functions
 export const getStoreById = (id: string) => mockStores.find(s => s.id === id);
-export const getProductById = (id: string) => mockProducts.find(p => p.id === id);
-export const getOfferById = (id: string) => mockOffers.find(o => o.id === id);
+export const getAdminProductById = (id: string) => mockAdminProducts.find(p => p.coreProduct.id === id);
+export const getAdminOfferById = (id: string) => mockAdminOffers.find(o => o.id === id);
 export const getComboById = (id: string) => mockCombos.find(c => c.id === id);
 export const getTemplateById = (id: string) => mockTemplates.find(t => t.id === id);
 export const getUserById = (id: string) => mockUsers.find(u => u.id === id);
 
-export const getOffersForProduct = (productId: string) => 
-  mockOffers.filter(o => o.productId === productId);
+export const getAdminOffersForProduct = (productId: string) => 
+  mockAdminOffers.filter(o => o.productId === productId);
 
 export const getScraperForStore = (storeId: string) => 
   mockScrapers.find(s => s.storeId === storeId);
+
+// LEGACY COMPATIBILITY - For components that haven't been updated yet
+// TODO: Remove these when all admin components use the new linked structure
+
+// Legacy type aliases
+export type Product = {
+  id: string;
+  name: string;
+  brand: string;
+  size: string;
+  category: string;
+  gtin: string | null;
+  image: string;
+  normalizedName: string;
+  status: 'active' | 'archived' | 'pending';
+  description?: string;
+  updatedAt: string;
+  tags: string[];
+};
+
+export type Offer = AdminOffer; // Direct alias for admin offer
+
+export const mockProducts = mockAdminProducts.map(ap => ({
+  id: ap.coreProduct.id,
+  name: ap.coreProduct.name,
+  brand: ap.coreProduct.brand,
+  size: ap.size,
+  category: ap.coreProduct.categoryPath[ap.coreProduct.categoryPath.length - 1],
+  gtin: ap.gtin,
+  image: ap.coreProduct.image,
+  normalizedName: ap.normalizedName,
+  status: ap.status,
+  description: ap.description,
+  updatedAt: ap.updatedAt,
+  tags: ap.tags
+}));
+
+export const mockOffers = mockAdminOffers;
+
+// Legacy utility functions
+export const getProductById = (id: string) => mockProducts.find(p => p.id === id);
+export const getOfferById = (id: string) => mockOffers.find(o => o.id === id);
+export const getOffersForProduct = (productId: string) => mockOffers.filter(o => o.productId === productId);
