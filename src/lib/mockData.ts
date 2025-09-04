@@ -150,6 +150,117 @@ export const mockWishlists: Wishlist[] = [
   }
 ];
 
+// Dashboard-specific mock data
+export interface DashboardUser {
+  id: string;
+  name: string;
+  preferredStores: string[];
+}
+
+export interface PriceAlert {
+  productId: string;
+  name: string;
+  oldPrice: number;
+  newPrice: number;
+  store: string;
+}
+
+export interface PriceDrop {
+  productId: string;
+  name: string;
+  oldPrice: number;
+  newPrice: number;
+  store: string;
+  image: string;
+}
+
+export interface Budget {
+  cap: number;
+  current: number;
+}
+
+export const mockDashboardUser: DashboardUser = {
+  id: "u1",
+  name: "Ana",
+  preferredStores: ["Freshful", "Carrefour"]
+};
+
+export const mockPriceAlerts: PriceAlert[] = [
+  {
+    productId: "p2",
+    name: "Mușchi file 100g",
+    oldPrice: 7.99,
+    newPrice: 7.09,
+    store: "Freshful"
+  }
+];
+
+export const mockPriceDrops: PriceDrop[] = [
+  {
+    productId: "pMilk",
+    name: "Lapte 1.5% 1.5L",
+    oldPrice: 14.39,
+    newPrice: 12.49,
+    store: "Freshful",
+    image: "/placeholder-milk.png"
+  },
+  {
+    productId: "pBread",
+    name: "Pâine integrală 500g",
+    oldPrice: 6.99,
+    newPrice: 4.99,
+    store: "Store A",
+    image: "/placeholder-bread.png"
+  }
+];
+
+export const mockBudget: Budget = { 
+  cap: 150, 
+  current: 92.3 
+};
+
+export const mockRecentProducts: string[] = ["p2", "p3", "pMilk"];
+
+// Usage references for all mock data
+export const mockDataUsage = {
+  products: {
+    usage: ["Home page - featured products", "Product pages", "Search results", "Wishlists", "Combos"],
+    components: ["ProductCard", "ProductGrid", "SearchPage"]
+  },
+  offers: {
+    usage: ["Product detail pages - price comparison", "Store price listings"],
+    components: ["ProductPage", "OfferDetail"]
+  },
+  combos: {
+    usage: ["Combos page", "Dashboard - suggested combos", "Home page - featured combos"],
+    components: ["CombosPage", "ComboDetail", "Dashboard"]
+  },
+  wishlists: {
+    usage: ["Wishlists page", "Dashboard - user wishlists", "Wishlist detail pages"],
+    components: ["WishlistsPage", "WishlistDetail", "Dashboard"]
+  },
+  dashboardUser: {
+    usage: ["Dashboard - user welcome, preferences"],
+    components: ["Dashboard"]
+  },
+  priceAlerts: {
+    usage: ["Dashboard - price drop notifications"],
+    components: ["Dashboard"]
+  },
+  priceDrops: {
+    usage: ["Dashboard - recent price drops site-wide"],
+    components: ["Dashboard"]
+  },
+  budget: {
+    usage: ["Dashboard - weekly spending tracker"],
+    components: ["Dashboard"]
+  },
+  recentProducts: {
+    usage: ["Dashboard - recently viewed products"],
+    components: ["Dashboard"]
+  }
+};
+
 // Search function
 export const searchProducts = (query: string): Product[] => {
   if (!query.trim()) return [];

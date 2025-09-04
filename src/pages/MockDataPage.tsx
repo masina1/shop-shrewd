@@ -1,7 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { mockProducts, mockOffers, mockCombos, mockWishlists } from "@/lib/mockData";
+import { 
+  mockProducts, 
+  mockOffers, 
+  mockCombos, 
+  mockWishlists, 
+  mockDashboardUser, 
+  mockPriceAlerts, 
+  mockPriceDrops, 
+  mockBudget, 
+  mockRecentProducts, 
+  mockDataUsage 
+} from "@/lib/mockData";
 import { currentUser, badges, submittedOffers, leaderboardUsers, userActivity } from "@/lib/rewardsMockData";
 import { mockStores, mockProducts as adminProducts, mockOffers as adminOffers, mockCombos as adminCombos } from "@/lib/adminMockData";
 
@@ -14,11 +25,12 @@ export default function MockDataPage() {
       </div>
 
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="products">Products & Offers</TabsTrigger>
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="rewards">Rewards System</TabsTrigger>
           <TabsTrigger value="admin">Admin Data</TabsTrigger>
-          <TabsTrigger value="search">Search Data</TabsTrigger>
+          <TabsTrigger value="usage">Usage Guide</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products" className="space-y-4">
@@ -29,7 +41,7 @@ export default function MockDataPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {mockProducts.map((product) => (
-                  <div key={product.id} className="border rounded-p-3 space-y-2">
+                  <div key={product.id} className="border rounded p-3 space-y-2">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">{product.id}</Badge>
                       <span className="font-medium">{product.name}</span>
@@ -109,6 +121,91 @@ export default function MockDataPage() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="dashboard" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Dashboard User</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p><strong>ID:</strong> {mockDashboardUser.id}</p>
+                  <p><strong>Name:</strong> {mockDashboardUser.name}</p>
+                  <p><strong>Preferred Stores:</strong> {mockDashboardUser.preferredStores.join(", ")}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Budget Tracking</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p><strong>Weekly Cap:</strong> {mockBudget.cap} Lei</p>
+                  <p><strong>Current Spending:</strong> {mockBudget.current} Lei</p>
+                  <p><strong>Remaining:</strong> {(mockBudget.cap - mockBudget.current).toFixed(2)} Lei</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Price Alerts ({mockPriceAlerts.length})</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {mockPriceAlerts.map((alert, idx) => (
+                  <div key={idx} className="border rounded p-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">{alert.productId}</Badge>
+                      <span className="font-medium">{alert.name}</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <p>Store: {alert.store}</p>
+                      <p>Price: {alert.oldPrice} → {alert.newPrice} Lei</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Price Drops ({mockPriceDrops.length})</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {mockPriceDrops.map((drop, idx) => (
+                  <div key={idx} className="border rounded p-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">{drop.productId}</Badge>
+                      <span className="font-medium">{drop.name}</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <p>Store: {drop.store}</p>
+                      <p>Price: {drop.oldPrice} → {drop.newPrice} Lei</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Products</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-2 flex-wrap">
+                {mockRecentProducts.map((productId, idx) => (
+                  <Badge key={idx} variant="outline">{productId}</Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="rewards" className="space-y-4">
@@ -229,7 +326,45 @@ export default function MockDataPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="search" className="space-y-4">
+        <TabsContent value="usage" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Mock Data Usage Guide</CardTitle>
+              <CardDescription>Where each mock data set is used in the application</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {Object.entries(mockDataUsage).map(([key, info]) => (
+                  <div key={key} className="border rounded p-4 space-y-3">
+                    <h4 className="font-medium text-lg capitalize">{key.replace(/([A-Z])/g, ' $1').toLowerCase()}</h4>
+                    
+                    <div>
+                      <h5 className="font-medium text-sm mb-2">Used in:</h5>
+                      <div className="flex flex-wrap gap-1">
+                        {info.usage.map((usage, idx) => (
+                          <Badge key={idx} variant="secondary" className="text-xs">
+                            {usage}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h5 className="font-medium text-sm mb-2">Components:</h5>
+                      <div className="flex flex-wrap gap-1">
+                        {info.components.map((component, idx) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {component}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Search Service Mock Data</CardTitle>

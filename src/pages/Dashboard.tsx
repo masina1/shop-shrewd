@@ -22,49 +22,18 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { mockWishlists, mockCombos } from "@/lib/mockData";
-
-// Mock data for dashboard
-const mockUser = {
-  id: "u1",
-  name: "Ana",
-  preferredStores: ["Freshful", "Carrefour"]
-};
-
-const mockAlerts = [
-  {
-    productId: "p2",
-    name: "Mușchi file 100g",
-    oldPrice: 7.99,
-    newPrice: 7.09,
-    store: "Freshful"
-  }
-];
-
-const mockDrops = [
-  {
-    productId: "pMilk",
-    name: "Lapte 1.5% 1.5L",
-    oldPrice: 14.39,
-    newPrice: 12.49,
-    store: "Freshful",
-    image: "/placeholder-milk.png"
-  },
-  {
-    productId: "pBread",
-    name: "Pâine integrală 500g",
-    oldPrice: 6.99,
-    newPrice: 4.99,
-    store: "Store A",
-    image: "/placeholder-bread.png"
-  }
-];
-
-const mockBudget = { cap: 150, current: 92.3 };
-const mockRecentProducts = ["p2", "p3", "pMilk"];
+import { 
+  mockWishlists, 
+  mockCombos, 
+  mockDashboardUser, 
+  mockPriceAlerts, 
+  mockPriceDrops, 
+  mockBudget, 
+  mockRecentProducts 
+} from "@/lib/mockData";
 
 export default function Dashboard() {
-  const [preferredStores, setPreferredStores] = useState(mockUser.preferredStores);
+  const [preferredStores, setPreferredStores] = useState(mockDashboardUser.preferredStores);
   const navigate = useNavigate();
 
   const hasWishlists = mockWishlists.length > 0;
@@ -76,7 +45,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              Welcome back, {mockUser.name}
+              Welcome back, {mockDashboardUser.name}
             </h1>
             <p className="text-muted-foreground">Here's your shopping overview</p>
           </div>
@@ -170,7 +139,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {mockAlerts.map((alert, index) => (
+                  {mockPriceAlerts.map((alert, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-success-light rounded-lg">
                       <div>
                         <p className="font-medium text-sm">{alert.name}</p>
@@ -201,7 +170,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {mockDrops.slice(0, 3).map((drop, index) => (
+                  {mockPriceDrops.slice(0, 3).map((drop, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <img
                         src={drop.image}
