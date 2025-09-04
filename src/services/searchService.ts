@@ -1,40 +1,23 @@
 import { SearchParams, SearchResult, SearchResultItem, FacetOption, PriceBucket, StoreId } from '@/types/search';
+import { mockSearchProducts, SearchProduct } from '@/lib/mockData';
 
-// Mock data - easily replaceable with API calls
-const mockProducts = [
-  {
-    id: 'p1',
-    name: 'Lapte integral 3.5% 1L Zuzu',
-    brand: 'Zuzu',
-    image: '/placeholder.svg',
-    categoryPath: ['Băcănie', 'Alimente de bază', 'Lapte'],
-    badges: ['made_in_ro'],
-    offers: [
-      { store: 'kaufland', price: 6.99, unitPrice: '6.99 Lei/L', availability: 'in_stock' },
-      { store: 'carrefour', price: 7.29, unitPrice: '7.29 Lei/L', promoPct: 15, availability: 'in_stock' },
-      { store: 'freshful', price: 6.89, unitPrice: '6.89 Lei/L', availability: 'in_stock' }
-    ]
-  },
-  {
-    id: 'p2',
-    name: 'Pâine integrală 500g Vel Pitar',
-    brand: 'Vel Pitar',
-    image: '/placeholder.svg',
-    categoryPath: ['Băcănie', 'Panificație', 'Pâine'],
-    badges: ['eco', 'made_in_ro'],
-    offers: [
-      { store: 'kaufland', price: 4.99, availability: 'in_stock' },
-      { store: 'mega', price: 5.19, promoPct: 10, availability: 'in_stock' },
-      { store: 'freshful', price: 4.79, availability: 'limited' }
-    ]
-  }
-];
+/**
+ * ================================
+ * SEARCH SERVICE
+ * ================================
+ * 
+ * This service handles product search functionality.
+ * Currently uses centralized mock data from @/lib/mockData.ts
+ * 
+ * TODO: Replace mockSearchProducts with real API calls when backend is ready
+ * Example: const response = await fetch('/api/search', { method: 'POST', body: JSON.stringify(params) });
+ */
 
 export interface ISearchService {
   search(params: SearchParams): Promise<SearchResult>;
 }
 
-function filterProducts(products: typeof mockProducts, params: SearchParams) {
+function filterProducts(products: SearchProduct[], params: SearchParams) {
   let filtered = [...products];
 
   if (params.q) {
@@ -90,7 +73,7 @@ function filterProducts(products: typeof mockProducts, params: SearchParams) {
   return filtered;
 }
 
-function normalizeProducts(products: typeof mockProducts, params: SearchParams): SearchResultItem[] {
+function normalizeProducts(products: SearchProduct[], params: SearchParams): SearchResultItem[] {
   return products.map(product => {
     const availableOffers = product.offers.filter(offer => 
       params.availability !== 'in_stock' || offer.availability === 'in_stock'
@@ -122,7 +105,7 @@ function normalizeProducts(products: typeof mockProducts, params: SearchParams):
   });
 }
 
-function computeFacets(filteredProducts: typeof mockProducts) {
+function computeFacets(filteredProducts: SearchProduct[]) {
   const categoryCounts: Record<string, number> = {};
   filteredProducts.forEach(product => {
     product.categoryPath.forEach((cat, index) => {
@@ -175,7 +158,7 @@ export const searchService: ISearchService = {
     const pageSize = params.pageSize || 24;
     const page = params.page || 1;
 
-    const filteredProducts = filterProducts(mockProducts, params);
+    const filteredProducts = filterProducts(mockSearchProducts, params);
     let items = normalizeProducts(filteredProducts, params);
     const facets = computeFacets(filteredProducts);
 

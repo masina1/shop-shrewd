@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
 import { Badge, ShoppingCart, TrendingDown, Zap } from "lucide-react";
-import { mockProducts, mockCombos } from "@/lib/mockData";
+import { mockSearchProducts, mockCombos, getCheapestPrice } from "@/lib/mockData";
 import { AdSlot } from "@/components/ads/AdSlot";
 
+/**
+ * HOME PAGE
+ * Uses centralized mock data from @/lib/mockData.ts
+ * TODO: Replace mockSearchProducts with API call to /api/products/featured
+ */
 export default function Home() {
-  const featuredProduct = mockProducts[0]; // Lapte 1.5%
-  const otherOffers = mockProducts.slice(1, 4);
+  const featuredProduct = mockSearchProducts[0]; // First product as featured
+  const featuredPrice = getCheapestPrice(featuredProduct);
+  const otherOffers = mockSearchProducts.slice(1, 4);
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -53,7 +59,7 @@ export default function Home() {
                 </h2>
                 <div className="flex items-center space-x-2 mb-3">
                   <div className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                    {featuredProduct.store}
+                    {featuredPrice.store}
                   </div>
                   <div className="flex items-center text-sm">
                     <TrendingDown className="w-4 h-4 mr-1" />
@@ -61,7 +67,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="text-3xl font-bold">
-                  {featuredProduct.lowestPrice.toFixed(2)} RON
+                  {featuredPrice.price.toFixed(2)} RON
                 </div>
               </div>
             </div>
@@ -108,44 +114,47 @@ export default function Home() {
         </div>
         
         <div className="space-y-3">
-          {otherOffers.map((product) => (
-            <Link
-              key={product.id}
-              to={`/product/${product.id}`}
-              className="block"
-            >
-              <div className="flex items-center space-x-4 p-4 rounded-xl border border-border hover:shadow-medium transition-all hover:border-primary/20 bg-card">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-12 h-12 rounded-lg object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder.svg";
-                  }}
-                />
-                <div className="flex-1">
-                  <h3 className="font-medium text-card-foreground mb-1">
-                    {product.name}
-                  </h3>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">
-                      {product.store}
-                    </span>
-                    <div className="w-1 h-1 bg-muted-foreground rounded-full" />
-                    <span className="text-success font-semibold">
-                      {product.lowestPrice.toFixed(2)} RON
-                    </span>
+          {otherOffers.map((product) => {
+            const cheapest = getCheapestPrice(product);
+            return (
+              <Link
+                key={product.id}
+                to={`/product/${product.id}`}
+                className="block"
+              >
+                <div className="flex items-center space-x-4 p-4 rounded-xl border border-border hover:shadow-medium transition-all hover:border-primary/20 bg-card">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-12 h-12 rounded-lg object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-medium text-card-foreground mb-1">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-muted-foreground">
+                        {cheapest.store}
+                      </span>
+                      <div className="w-1 h-1 bg-muted-foreground rounded-full" />
+                      <span className="text-success font-semibold">
+                        {cheapest.price.toFixed(2)} RON
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-muted-foreground">from</div>
+                    <div className="font-bold text-success">
+                      {cheapest.price.toFixed(2)} RON
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm text-muted-foreground">from</div>
-                  <div className="font-bold text-success">
-                    {product.lowestPrice.toFixed(2)} RON
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </section>
 

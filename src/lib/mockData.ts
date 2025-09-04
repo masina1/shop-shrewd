@@ -1,5 +1,39 @@
-// Mock data for the supermarket price comparison app
+/**
+ * ================================
+ * CENTRALIZED MOCK DATA
+ * ================================
+ * 
+ * This file contains ALL mock data for the application.
+ * When implementing real API integration, replace these exports with API calls.
+ * 
+ * Key integration points:
+ * - searchService.ts: Replace mockProducts with API endpoint
+ * - Home.tsx: Replace mockProducts with API endpoint  
+ * - All other pages: Replace respective mock data with API calls
+ * 
+ * TODO: Replace with real API calls when backend is ready
+ */
 
+// Search-compatible product structure (main product interface)
+export interface SearchProduct {
+  id: string;
+  name: string;
+  brand: string;
+  image: string;
+  categoryPath: string[]; // ['Băcănie', 'Alimente de bază', 'Lapte']
+  badges?: string[]; // ['eco', 'made_in_ro', 'fara_gluten']
+  offers: ProductOffer[];
+}
+
+export interface ProductOffer {
+  store: string;
+  price: number;
+  unitPrice?: string;
+  promoPct?: number;
+  availability: 'in_stock' | 'limited' | 'out_of_stock';
+}
+
+// Legacy Product interface (for backward compatibility)
 export interface Product {
   id: string;
   name: string;
@@ -37,56 +71,105 @@ export interface Wishlist {
   createdAt: string;
 }
 
-export const mockProducts: Product[] = [
+// ===== MAIN PRODUCT DATA (Used by Search & Home pages) =====
+// TODO: Replace with API call to /api/products
+export const mockSearchProducts: SearchProduct[] = [
   {
-    id: "p1",
-    name: "Lapte 1.5% 1.5L",
-    image: "/placeholder-milk.png",
-    lowestPrice: 12.49,
-    store: "Freshful",
-    category: "Dairy"
+    id: 'p1',
+    name: 'Lapte integral 3.5% 1L Zuzu',
+    brand: 'Zuzu',
+    image: '/placeholder.svg',
+    categoryPath: ['Băcănie', 'Alimente de bază', 'Lapte'],
+    badges: ['made_in_ro'],
+    offers: [
+      { store: 'kaufland', price: 6.99, unitPrice: '6.99 Lei/L', availability: 'in_stock' },
+      { store: 'carrefour', price: 7.29, unitPrice: '7.29 Lei/L', promoPct: 15, availability: 'in_stock' },
+      { store: 'freshful', price: 6.89, unitPrice: '6.89 Lei/L', availability: 'in_stock' }
+    ]
   },
   {
-    id: "p2",
-    name: "Mușchi file 100g",
-    image: "/placeholder-ham.png",
-    lowestPrice: 7.09,
-    store: "Freshful",
-    category: "Meat"
+    id: 'p2',
+    name: 'Pâine integrală 500g Vel Pitar',
+    brand: 'Vel Pitar',
+    image: '/placeholder.svg',
+    categoryPath: ['Băcănie', 'Panificație', 'Pâine'],
+    badges: ['eco', 'made_in_ro'],
+    offers: [
+      { store: 'kaufland', price: 4.99, availability: 'in_stock' },
+      { store: 'mega', price: 5.19, promoPct: 10, availability: 'in_stock' },
+      { store: 'freshful', price: 4.79, availability: 'limited' }
+    ]
   },
   {
-    id: "p3",
-    name: "Mozzarella 350g",
-    image: "/placeholder-mozzarella.png",
-    lowestPrice: 16.49,
-    store: "Freshful",
-    category: "Dairy"
+    id: 'p3',
+    name: 'Mozzarella 350g Hochland',
+    brand: 'Hochland',
+    image: '/placeholder.svg',
+    categoryPath: ['Băcănie', 'Lactate', 'Brânză'],
+    badges: ['imported'],
+    offers: [
+      { store: 'carrefour', price: 16.49, availability: 'in_stock' },
+      { store: 'kaufland', price: 17.99, availability: 'in_stock' },
+      { store: 'freshful', price: 18.49, promoPct: 8, availability: 'in_stock' }
+    ]
   },
   {
-    id: "p4",
-    name: "Pâine integrală 500g",
-    image: "/placeholder-bread.png",
-    lowestPrice: 4.99,
-    store: "Store A",
-    category: "Bakery"
+    id: 'p4',
+    name: 'Mușchi file 100g Scandia',
+    brand: 'Scandia',
+    image: '/placeholder.svg',
+    categoryPath: ['Băcănie', 'Carne', 'Șuncă'],
+    badges: ['made_in_ro'],
+    offers: [
+      { store: 'freshful', price: 7.09, availability: 'in_stock' },
+      { store: 'kaufland', price: 7.49, promoPct: 5, availability: 'in_stock' },
+      { store: 'carrefour', price: 7.99, availability: 'limited' }
+    ]
   },
   {
-    id: "p5",
-    name: "Ouă L 10 bucăți",
-    image: "/placeholder-eggs.png",
-    lowestPrice: 13.99,
-    store: "Store B",
-    category: "Dairy"
+    id: 'p5',
+    name: 'Ouă L 10 bucăți Fermierul',
+    brand: 'Fermierul',
+    image: '/placeholder.svg',
+    categoryPath: ['Băcănie', 'Lactate', 'Ouă'],
+    badges: ['eco', 'made_in_ro'],
+    offers: [
+      { store: 'mega', price: 13.99, availability: 'in_stock' },
+      { store: 'kaufland', price: 14.49, availability: 'in_stock' },
+      { store: 'carrefour', price: 15.99, promoPct: 12, availability: 'in_stock' }
+    ]
   },
   {
-    id: "p6",
-    name: "Paste 500g",
-    image: "/placeholder-pasta.png",
-    lowestPrice: 5.99,
-    store: "Store C",
-    category: "Pantry"
+    id: 'p6',
+    name: 'Paste 500g Barilla',
+    brand: 'Barilla',
+    image: '/placeholder.svg',
+    categoryPath: ['Băcănie', 'Alimente de bază', 'Paste'],
+    badges: ['imported'],
+    offers: [
+      { store: 'carrefour', price: 5.99, availability: 'in_stock' },
+      { store: 'kaufland', price: 6.49, promoPct: 10, availability: 'in_stock' },
+      { store: 'mega', price: 6.99, availability: 'out_of_stock' }
+    ]
   }
 ];
+
+// Legacy Product interface for backward compatibility
+// TODO: Remove when all components migrate to SearchProduct
+export const mockProducts: Product[] = mockSearchProducts.map(product => {
+  const cheapestOffer = product.offers.reduce((min, offer) => 
+    offer.price < min.price ? offer : min
+  );
+  
+  return {
+    id: product.id,
+    name: product.name,
+    image: product.image,
+    lowestPrice: cheapestOffer.price,
+    store: cheapestOffer.store,
+    category: product.categoryPath[product.categoryPath.length - 1]
+  };
+});
 
 export const mockOffers: Offer[] = [
   { productId: "p2", store: "Freshful", price: 7.09, image: "/thumb-fresh.png" },
@@ -221,11 +304,25 @@ export const mockBudget: Budget = {
 
 export const mockRecentProducts: string[] = ["p2", "p3", "pMilk"];
 
+// ===== HELPER FUNCTIONS =====
+// Get cheapest price for a product
+export const getCheapestPrice = (product: SearchProduct): { price: number; store: string } => {
+  const cheapest = product.offers.reduce((min, offer) => 
+    offer.price < min.price ? offer : min
+  );
+  return { price: cheapest.price, store: cheapest.store };
+};
+
 // Usage references for all mock data
 export const mockDataUsage = {
+  searchProducts: {
+    usage: ["Search page - main product data", "Home page - featured products", "Product pages", "API replacement point"],
+    components: ["SearchPage", "Home", "ProductCard", "ProductGrid"],
+    apiReplacement: "Replace with API call to /api/products"
+  },
   products: {
-    usage: ["Home page - featured products", "Product pages", "Search results", "Wishlists", "Combos"],
-    components: ["ProductCard", "ProductGrid", "SearchPage"]
+    usage: ["Legacy support - will be removed", "Backward compatibility"],
+    components: ["Legacy components - to be updated"]
   },
   offers: {
     usage: ["Product detail pages - price comparison", "Store price listings"],
